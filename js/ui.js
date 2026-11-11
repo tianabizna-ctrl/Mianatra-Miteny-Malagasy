@@ -148,9 +148,15 @@ window.Salama = window.Salama || {};
     var opts = options || {};
     var extra = (opts.wordId ? ' data-word-id="' + esc(opts.wordId) + '"' : '') +
                 (opts.line ? ' data-line="' + esc(opts.line) + '"' : '');
-    var label = opts.label || 'Hear it';
+    var recKey = resolveEditKey(text, opts) || (opts.wordId ? 'word:' + opts.wordId : (opts.line ? 'dlg:' + opts.line : ''));
+    var hasCustom = Boolean(recKey && S.speech && S.speech.hasCustomAudio && S.speech.hasCustomAudio(recKey));
+    var label = opts.label || (hasCustom ? 'Hear My Voice' : 'Hear it');
     var showEdit = Boolean(S.core && S.core.state && S.core.state.prefs && S.core.state.prefs.showInlineEdit);
-    var editKey = showEdit ? resolveEditKey(text, opts) : '';
+    var editKey = showEdit ? recKey : '';
+    var recBtn = recKey
+      ? '<button class="icon-btn rec-btn" type="button" data-mic-record="' + esc(recKey) + '" style="border-color:#c93b2b;color:#c93b2b;font-weight:700" title="Record your voice for this word">\u25CF<span>' + (hasCustom ? 'Re-record' : 'Record') + '</span></button>' +
+        (hasCustom ? '<button class="icon-btn" type="button" data-mic-download="' + esc(recKey) + '" title="Download your .wav recording">\u2B07<span>.wav</span></button>' : '')
+      : '';
     var editBtn = editKey
       ? '<button class="icon-btn edit-btn" type="button" data-edit-key="' + esc(editKey) + '" title="Edit Malagasy &amp; phonetics">\u270E<span>Edit</span></button>'
       : '';
@@ -158,6 +164,7 @@ window.Salama = window.Salama || {};
         icon('play') + '<span>' + esc(label) + '</span></button>' +
       '<button class="icon-btn slow" type="button" data-slow="' + esc(text) + '"' + extra + '>' +
         icon('volume') + '<span>Syllables</span></button>' +
+      recBtn +
       editBtn;
   }
 
@@ -359,6 +366,35 @@ window.Salama = window.Salama || {};
    */
   function speakFrom(event) {
     if (handleEditInteraction(event)) return true;
+    var micBtn = event.target && event.target.closest ? event.target.closest('[data-mic-record]') : null;
+    if (micBtn) {
+      var mKey = micBtn.getAttribute('data-mic-record');
+      if (S.speech && S.speech.toggleMicRecording) {
+        S.speech.toggleMicRecording(mKey, micBtn, function () {
+          var toolsWrap = micBtn.parentElement;
+          if (toolsWrap && !toolsWrap.querySelector('[data-mic-download]')) {
+            var dl = document.createElement('button');
+            dl.className = 'icon-btn';
+            dl.type = 'button';
+            dl.setAttribute('data-mic-download', mKey);
+            dl.title = 'Download your .wav recording';
+            dl.innerHTML = '\u2B07<span>.wav</span>';
+            micBtn.insertAdjacentElement('afterend', dl);
+          }
+          var hearSpan = toolsWrap && toolsWrap.querySelector('.hear-btn span');
+          if (hearSpan) hearSpan.textContent = 'Hear My Voice';
+        });
+      }
+      return true;
+    }
+    var dlBtn = event.target && event.target.closest ? event.target.closest('[data-mic-download]') : null;
+    if (dlBtn) {
+      var dKey = dlBtn.getAttribute('data-mic-download');
+      if (S.speech && S.speech.downloadCustomWav) {
+        S.speech.downloadCustomWav(dKey);
+      }
+      return true;
+    }
     var node = event.target.closest('[data-speak],[data-slow]');
     if (!node) return false;
     var speech = S.speech;

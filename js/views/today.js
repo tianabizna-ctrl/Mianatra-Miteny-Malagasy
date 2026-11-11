@@ -152,6 +152,19 @@
 
     return '' +
       heroBanner(session) +
+      '<div class="miteny-section" style="padding-bottom:0">' +
+        '<section class="panel" style="border:2px solid #c93b2b;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">' +
+          '<div>' +
+            '<p class="section-eyebrow" style="margin:0 0 2px;color:#c93b2b">\u25CF VOICE RECORDER STUDIO \u2022 RECORD YOUR OWN VOICE</p>' +
+            '<h2 style="margin:0 0 4px;font-size:1.35rem">Record <span lang="mg">Fahasalamana?</span> (and any word) with your microphone</h2>' +
+            '<p class="meta" style="margin:0">Click <strong>\u25CF Record "Fahasalamana"</strong> below or open the Voice Recorder Studio to record any word, hear your voice immediately across the site, and download the <code>.wav</code> file to upload in chat.</p>' +
+          '</div>' +
+          '<div class="entry-tools" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">' +
+            ui.speakButtons('Fahasalamana?', { wordId: 'fahasalamana', editKey: 'word:fahasalamana' }) +
+            '<a class="btn btn-sm" href="#/record/fahasalamana" style="background:#123F2B;color:#FFF8EC">Open Full Voice Recorder &rarr;</a>' +
+          '</div>' +
+        '</section>' +
+      '</div>' +
       '<div class="miteny-section">' +
         '<p class="section-eyebrow">01 \u2014 LEARN \u2022 ' + ui.esc(core.longDate().toUpperCase()) + '</p>' +
         '<div class="section-head-row">' +

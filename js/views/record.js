@@ -108,7 +108,7 @@
       (inIframe
         ? '<div style="background:#FFF3CD;border:1px solid #F2B705;border-radius:12px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">' +
             '<span style="font-size:0.92rem;color:#3d2c00"><strong>Tip:</strong> If your browser blocks the microphone inside this preview frame, open the recorder in a full tab:</span>' +
-            '<a class="btn btn-sm" href="https://tianabizna-ctrl.github.io/Mianatra-Miteny-Malagasy/?v=4.3.7#/record/' + ui.esc(shortId) + '" target="_blank" rel="noopener">Open Recorder in Full Tab &nearr;</a>' +
+            '<a class="btn btn-sm" href="https://tianabizna-ctrl.github.io/Mianatra-Miteny-Malagasy/?v=4.3.8#/record/' + ui.esc(shortId) + '" target="_blank" rel="noopener">Open Recorder in Full Tab &nearr;</a>' +
           '</div>'
         : '') +
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">' +
