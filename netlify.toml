@@ -1,6 +1,6 @@
 [build]
-  publish = "APP"
-  command = "echo 'Salama! v4.3.8 static build ready in APP/'"
+  publish = "."
+  command = "echo 'Salama! v4.3.8 static build ready'"
 
 [[headers]]
   for = "/sw.js"
