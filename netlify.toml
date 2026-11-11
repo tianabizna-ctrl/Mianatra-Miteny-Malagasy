@@ -1,0 +1,29 @@
+[build]
+  publish = "APP"
+  command = "echo 'Salama! v4.3.7 static build ready in APP/'"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/media/audio_abidi/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+    Accept-Ranges = "bytes"

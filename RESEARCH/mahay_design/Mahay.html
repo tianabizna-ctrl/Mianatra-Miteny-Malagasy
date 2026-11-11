@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-dir="laterite" data-mode="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAHAY · Learn to speak Malagasy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gloock&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Young+Serif&family=Work+Sans:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="mahay.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+<script src="data.js"></script>
+<script type="text/babel" src="tweaks_panel.jsx"></script>
+<script type="text/babel" src="core.jsx"></script>
+<script type="text/babel" src="landing.jsx"></script>
+<script type="text/babel" src="course.jsx"></script>
+<script type="text/babel" src="practice.jsx"></script>
+<script type="text/babel" src="reference.jsx"></script>
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "direction": "laterite",
+  "palette": "laterite",
+  "font": "gloock",
+  "mode": "auto",
+  "phonetic": true,
+  "english": true
+}/*EDITMODE-END*/;
+
+const PALETTES = {
+  laterite: { swatch: ['#b2452a', '#4f8a55', '#4a2418'], accent: 'oklch(0.53 0.15 35)', accent2: 'oklch(0.55 0.11 145)', deep: 'oklch(0.3 0.06 35)' },
+  vanilla:  { swatch: ['#a8741c', '#5f7f3a', '#3a2a14'], accent: 'oklch(0.6 0.13 70)', accent2: 'oklch(0.55 0.1 130)', deep: 'oklch(0.3 0.045 70)' },
+  ravinala: { swatch: ['#2f7d5b', '#c0582f', '#163a2c'], accent: 'oklch(0.52 0.1 160)', accent2: 'oklch(0.58 0.14 40)', deep: 'oklch(0.29 0.05 160)' },
+  lamba:    { swatch: ['#3d5a9e', '#b5612f', '#1c2440'], accent: 'oklch(0.48 0.12 265)', accent2: 'oklch(0.58 0.13 50)', deep: 'oklch(0.27 0.05 265)' },
+};
+const FONTS = {
+  gloock:    { display: "'Gloock', Georgia, serif", body: "'Instrument Sans', system-ui, sans-serif" },
+  young:     { display: "'Young Serif', Georgia, serif", body: "'Work Sans', system-ui, sans-serif" },
+  bricolage: { display: "'Bricolage Grotesque', system-ui, sans-serif", body: "'Bricolage Grotesque', system-ui, sans-serif" },
+};
+
+const NAV = [
+  ['home', 'Home'], ['learn', 'Learn'], ['practice', 'Practice'], ['phrasebook', 'Phrasebook'],
+  ['sounds', 'Sounds'], ['grammar', 'Grammar'], ['culture', 'Culture'], ['resources', 'Resources'],
+];
+
+function TopNav({ route }) {
+  const { p } = useProgress();
+  const base = route.split('/')[0];
+  const cur = base === 'lesson' ? 'learn' : base;
+  const [more, setMore] = useState(false);
+  return (
+    <>
+      <nav className="topnav">
+        <div className="wrap tn-inner">
+          <a href="#/home" className="logo" style={{ textDecoration: 'none', color: 'inherit' }}><span className="logo-mark" />MAHAY</a>
+          <div className="tn-links">{NAV.slice(1).map(([k, l]) => <a key={k} href={'#/' + k} className={cur === k ? 'on' : ''}>{l}</a>)}</div>
+          <span className="tn-streak" title="Day streak">{Ico.flame(14)} {p.streak}</span>
+        </div>
+      </nav>
+      <div className="tabbar">
+        {[['home', 'Home'], ['learn', 'Learn'], ['practice', 'Practice'], ['phrasebook', 'Phrases']].map(([k, l]) => (
+          <a key={k} href={'#/' + k} className={cur === k ? 'on' : ''}><i />{l}</a>
+        ))}
+        <a href="#" className={['sounds', 'grammar', 'culture', 'resources'].includes(cur) ? 'on' : ''} onClick={(e) => { e.preventDefault(); setMore(!more); }}><i />More</a>
+      </div>
+      {more && (
+        <div className="more-sheet" onClick={() => setMore(false)}>
+          <div className="more-pop">{NAV.slice(4).map(([k, l]) => <a key={k} href={'#/' + k}>{l}</a>)}</div>
+        </div>
+      )}
+    </>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="footer">
+      <div className="wrap">
+        <span><b style={{ fontFamily: 'var(--f-display)', fontWeight: 400, fontSize: 18, color: 'var(--ink)' }}>MAHAY</b> · Learn official Malagasy, <span lang="mg">mora mora</span>.</span>
+        <span>Lessons adapted from <a href="https://bako.blog/" target="_blank" rel="noopener">Learning Malagasy with Bako</a> · <a href="#/resources">Resources</a></span>
+      </div>
+    </footer>
+  );
+}
+
+function App() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const route = useRoute();
+  const [base, sub] = route.split('/');
+  const prog = useProgress();
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.dir = t.direction;
+    const mode = t.mode === 'auto' ? (t.direction === 'dusk' ? 'dark' : 'light') : t.mode;
+    root.dataset.mode = mode;
+    const pal = PALETTES[t.palette] || PALETTES.laterite;
+    root.style.setProperty('--accent', pal.accent);
+    root.style.setProperty('--accent-2', pal.accent2);
+    if (mode === 'light' && t.direction !== 'dusk') root.style.setProperty('--deep', pal.deep); else root.style.removeProperty('--deep');
+    const f = FONTS[t.font] || FONTS.gloock;
+    root.style.setProperty('--f-display', f.display);
+    root.style.setProperty('--f-body', f.body);
+  }, [t]);
+
+  let page;
+  switch (base) {
+    case 'learn': page = <CourseMap />; break;
+    case 'lesson': page = <LessonPlayer key={sub} id={sub} />; break;
+    case 'practice': page = <Practice sub={sub} />; break;
+    case 'phrasebook': page = <Phrasebook sub={sub} />; break;
+    case 'sounds': page = <Sounds />; break;
+    case 'grammar': page = <Grammar />; break;
+    case 'culture': page = <Culture />; break;
+    case 'resources': page = <Resources />; break;
+    default: page = <Landing direction={t.direction} />;
+  }
+
+  return (
+    <PrefsCtx.Provider value={{ phonetic: t.phonetic, english: t.english }}>
+      <TopNav route={route} />
+      <main>{page}</main>
+      {base !== 'lesson' && <Footer />}
+      <TweaksPanel>
+        <TweakSection label="Visual direction">
+          <TweakSelect label="Direction" value={t.direction} onChange={(v) => setTweak('direction', v)}
+            options={[{ value: 'laterite', label: 'Laterite: editorial, red earth' }, { value: 'raffia', label: 'Raffia: woven, soft, warm' }, { value: 'dusk', label: 'Baobab dusk: dark, immersive' }]} />
+          <TweakColor label="Palette" value={PALETTES[t.palette].swatch} options={Object.values(PALETTES).map((p) => p.swatch)}
+            onChange={(v) => setTweak('palette', Object.keys(PALETTES).find((k) => PALETTES[k].swatch[0] === v[0]))} />
+          <TweakSelect label="Fonts" value={t.font} onChange={(v) => setTweak('font', v)}
+            options={[{ value: 'gloock', label: 'Gloock + Instrument Sans' }, { value: 'young', label: 'Young Serif + Work Sans' }, { value: 'bricolage', label: 'Bricolage Grotesque' }]} />
+          <TweakRadio label="Mode" value={t.mode} onChange={(v) => setTweak('mode', v)} options={[{ value: 'auto', label: 'Auto' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]} />
+        </TweakSection>
+        <TweakSection label="Learning display">
+          <TweakToggle label="Phonetic spelling" value={t.phonetic} onChange={(v) => setTweak('phonetic', v)} />
+          <TweakToggle label="English translations" value={t.english} onChange={(v) => setTweak('english', v)} />
+          <TweakButton label="Reset my progress" secondary onClick={() => { if (confirm('Reset all progress?')) prog.reset(); }} />
+        </TweakSection>
+      </TweaksPanel>
+    </PrefsCtx.Provider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<ProgressProvider><App /></ProgressProvider>);
+</script>
+</body>
+</html>

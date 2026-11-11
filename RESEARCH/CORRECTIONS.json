@@ -1,0 +1,273 @@
+{
+  "entries": {
+    "word:haody": {
+      "mg": "Haody oh!",
+      "pron": "outdzioh",
+      "verdict": "ok"
+    },
+    "phrase:haody": {
+      "mg": "Haody oh!",
+      "pron": "outdzioh",
+      "verdict": "ok"
+    },
+    "dlg:dlg_greet_and_farewell:0": {
+      "mg": "Haody oh!",
+      "pron": "outdzioh",
+      "verdict": "ok"
+    },
+    "dlg:dlg_market_shopping:0": {
+      "mg": "Haody oh!",
+      "pron": "outdzioh",
+      "verdict": "ok"
+    },
+    "dlg:dlg_intro_1a_12:0": {
+      "mg": "Haody oh!",
+      "pron": "outdzioh",
+      "verdict": "ok"
+    },
+    "dlg:dlg_intro_4_23:0": {
+      "mg": "Haody oh!",
+      "pron": "outdzioh",
+      "verdict": "ok"
+    },
+    "word:salama": {
+      "pron": "sah-LAH-mah",
+      "verdict": "ok"
+    },
+    "phrase:wv_hello": {
+      "pron": "sah-LAH-mah",
+      "verdict": "ok"
+    },
+    "word:mandrosoa": {
+      "pron": "mahn-DROO-soo-ah",
+      "verdict": "ok"
+    },
+    "phrase:mandrosoa": {
+      "pron": "mahn-DROO-soo-ah",
+      "verdict": "ok"
+    },
+    "word:mipetrapetraha": {
+      "pron": "mee-PEH-trah-peh-trah-hah",
+      "verdict": "ok"
+    },
+    "phrase:mipetrapetraha": {
+      "pron": "mee-PEH-trah-peh-trah-hah",
+      "verdict": "ok"
+    },
+    "dlg:dlg_greet_and_farewell:1": {
+      "pron": "mahn-DROO-soo-ah mee-PEH-trah-peh-trah-hah",
+      "verdict": "ok"
+    },
+    "dlg:dlg_intro_1a_12:1": {
+      "pron": "mahn-DROO-soo-ah mee-PEH-trah-peh-trah-hah",
+      "verdict": "ok"
+    },
+    "dlg:dlg_market_shopping:1": {
+      "pron": "mahn-DROO-soo-ah",
+      "verdict": "ok"
+    },
+    "dlg:dlg_eating_ordering:0": {
+      "pron": "mahn-DROO-soo-ah mee-sah-KAH-foo ee-SEE-kah",
+      "verdict": "ok"
+    },
+    "dlg:dlg_basic_needs:1": {
+      "mg": "Mandrosoa! Misotro kafe.",
+      "pron": "mahn-DROO-soo-ah mee-SOO-troo kah-FEH",
+      "verdict": "ok"
+    },
+    "dlg:dlg_intro_4_23:1": {
+      "pron": "mahn-DROO-soo-ah",
+      "verdict": "ok"
+    },
+    "dlg:dlg_intro_4_24:0": {
+      "pron": "mahn-DROO-soo-ah",
+      "verdict": "ok"
+    },
+    "dlg:dlg_intro_4_24:5": {
+      "pron": "mahn-DROO-soo-ah",
+      "verdict": "ok"
+    },
+    "dlg:dlg_intro_2_14:0": {
+      "mg": "Misaotra.",
+      "pron": "mee-SOH-trah"
+    },
+    "dlg:dlg_intro_2_14:1": {
+      "mg": "Tsy misy fisaorana.",
+      "pron": "TSEE MEE-see fee-soh-RAH-nah"
+    },
+    "dlg:dlg_intro_2_15:0": {
+      "mg": "Azafady.",
+      "pron": "ah-zah-FAH-dee"
+    },
+    "dlg:dlg_intro_2_15:1": {
+      "mg": "Ndao.",
+      "pron": "NDOH"
+    },
+    "dlg:dlg_intro_2_16:0": {
+      "mg": "Azafady.",
+      "pron": "ah-zah-FAH-dee"
+    },
+    "dlg:dlg_intro_2_16:1": {
+      "mg": "Tsy maninona.",
+      "pron": "TSEE mah-nee-NOO-nah"
+    },
+    "dlg:dlg_intro_2_18:0": {
+      "mg": "Soava dia.",
+      "pron": "soo-AH-vah DEE-ah"
+    },
+    "dlg:dlg_intro_2_18:1": {
+      "mg": "Misaotra betsaka.",
+      "pron": "mee-SOH-trah beh-TSAH-kah"
+    },
+    "dlg:dlg_intro_2_19:0": {
+      "mg": "Tonga soa.",
+      "pron": "TOO-ngah SOO-ah"
+    },
+    "dlg:dlg_intro_2_19:1": {
+      "mg": "Misaotra betsaka.",
+      "pron": "mee-SOH-trah beh-TSAH-kah"
+    },
+    "dlg:dlg_intro_2_20:0": {
+      "mg": "Mazotoa.",
+      "pron": "mah-zoo-TOO-ah"
+    },
+    "dlg:dlg_intro_2_20:1": {
+      "mg": "Misaotra, ianao koa.",
+      "pron": "mee-SOH-trah ee-AH-noh KOO-ah"
+    },
+    "dlg:dlg_intro_6_29:0": {
+      "mg": "Tsara ve any ambanivohitra?",
+      "pron": "TSAH-rah VEH AH-nee ahm-bah-nee-VOO-hee-trah"
+    },
+    "dlg:dlg_intro_6_29:1": {
+      "mg": "Eny, tsara satria tsy betsaka ny fiara.",
+      "pron": "EH-nee TSAH-rah sah-TREE-ah TSEE beh-TSAH-kah NEE fee-AH-rah"
+    },
+    "dlg:dlg_intro_6_29:2": {
+      "mg": "Madio ny rivotra.",
+      "pron": "mah-DEE-oo NEE REE-voo-trah"
+    },
+    "dlg:dlg_intro_6_29:3": {
+      "mg": "Malalaka.",
+      "pron": "mah-lah-LAH-kah"
+    },
+    "dlg:dlg_intro_6_29:4": {
+      "mg": "Vaovao ny sakafo amin'ny ankapobeny.",
+      "pron": "vah-OO-vah-oo NEE sah-KAH-foo ah-MEE-n'nee ahn-kah-poo-BEH-nee"
+    },
+    "dlg:dlg_intro_6_29:5": {
+      "mg": "Tsy misy tabataba.",
+      "pron": "TSEE MEE-see tah-bah-TAH-bah"
+    },
+    "dlg:dlg_intro_6_29:6": {
+      "mg": "Tsara tarehy ny lanitra sy ny kintana amin'ny alina.",
+      "pron": "TSAH-rah tah-REH-hee NEE lah-NEE-trah SEE NEE keen-TAH-nah ah-MEE-n'nee ah-LEE-nah"
+    },
+    "word:olom-pantatra_across_prep": {
+      "mg": "olom-pantatra",
+      "pron": [
+        "OO-loom PAHN-tah-trah",
+        "rule"
+      ]
+    },
+    "word:matahotra_after_prep": {
+      "mg": "matahotra",
+      "pron": [
+        "mah-TAH-hoo-trah",
+        "rule"
+      ]
+    },
+    "word:indray_against_prep": {
+      "mg": "indray",
+      "pron": [
+        "EEN-dreye",
+        "rule"
+      ]
+    },
+    "word:fikambanana_at_prep": {
+      "mg": "fikambanana",
+      "pron": [
+        "fee-kahm-bah-NAH-nah",
+        "rule"
+      ]
+    },
+    "word:fiantombohana_behind_prep": {
+      "mg": "fiantombohana",
+      "pron": [
+        "fee-ahn-toom-boo-HAH-nah",
+        "rule"
+      ]
+    },
+    "word:dabilio_beside_prep": {
+      "mg": "dabilio",
+      "pron": [
+        "dah-bee-LEE-oo",
+        "rule"
+      ]
+    },
+    "word:varavarana_down_prep": {
+      "mg": "varavarana",
+      "pron": [
+        "vah-rah-vah-RAH-nah",
+        "rule"
+      ]
+    },
+    "word:faharetana_during_prep": {
+      "mg": "faharetana",
+      "pron": [
+        "fah-hah-reh-TAH-nah",
+        "rule"
+      ]
+    },
+    "word:mihoatra_except_prep": {
+      "mg": "mihoatra",
+      "pron": [
+        "mee-HOO-ah-trah",
+        "rule"
+      ]
+    },
+    "word:adala_for_prep": {
+      "mg": "adala",
+      "pron": [
+        "ah-DAH-lah",
+        "rule"
+      ]
+    },
+    "word:sahona_from_prep": {
+      "mg": "sahona",
+      "pron": [
+        "sah-HOO-nah",
+        "rule"
+      ]
+    },
+    "word:zava-manan'aina_near_prep": {
+      "mg": "zava-manan'aina",
+      "pron": [
+        "ZAH-vah mah-nah-N'EYE-nah",
+        "rule"
+      ]
+    },
+    "word:tsotra_since_prep": {
+      "mg": "tsotra",
+      "pron": [
+        "TSOO-trah",
+        "rule"
+      ]
+    },
+    "word:vizaka_to_prep": {
+      "mg": "vizaka",
+      "pron": [
+        "vee-ZAH-kah",
+        "rule"
+      ]
+    },
+    "word:tsy_mahatsiaro_tena_under_prep": {
+      "mg": "tsy mahatsiaro tena",
+      "pron": "TSEE mah-hah-tsee-AH-roo TEH-nah"
+    },
+    "word:tsy_voafetra_until_prep": {
+      "mg": "tsy voafetra",
+      "pron": "TSEE voo-AH-feh-trah"
+    }
+  }
+}

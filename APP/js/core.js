@@ -1,0 +1,652 @@
+/* ============================================================
+   Core: stored state, spaced repetition, progress selectors.
+   No DOM here — keeps the learning logic testable and separate.
+   ============================================================ */
+window.Salama = window.Salama || {};
+(function (S) {
+  'use strict';
+
+  var C = window.CONTENT;
+  var KEY = 'salama_state_v3';
+  var LEGACY_KEY = 'salama_progress_v1';
+
+  /* ---------------- state ---------------- */
+  function blank() {
+    return {
+      version: 3,
+      cards: {},          // wordId -> { box, seen, lastGrade }
+      sessions: {},       // sessionId -> timestamp completed
+      quizzes: [],        // [{ date, theme, score, total }]
+      streak: { last: null, days: 0, visits: 0 },
+      prefs: {
+        textsize: 0,
+        autoplay: true,
+        rate: 0.82,
+        syllables: false,
+        recordedVoice: 'abidi',
+        voiceURI: '',
+        direction: 'miteny',
+        palette: 'miteny',
+        font: 'fraunces',
+        mode: 'auto'
+      }
+    };
+  }
+
+  function readJSON(key) {
+    try { return JSON.parse(localStorage.getItem(key) || 'null'); }
+    catch (e) { return null; }
+  }
+
+  function migrate() {
+    var fresh = blank();
+    var old = readJSON(LEGACY_KEY);
+    if (!old) return fresh;
+    // v1 kept words -> { box, seen }, quizzes, weeks and a streak.
+    if (old.words) {
+      Object.keys(old.words).forEach(function (id) {
+        var w = old.words[id] || {};
+        fresh.cards[id] = { box: w.box || 0, seen: w.seen || Date.now(), lastGrade: 2 };
+      });
+    }
+    if (Array.isArray(old.quizzes)) fresh.quizzes = old.quizzes.slice(-40);
+    if (old.weeks) {
+      Object.keys(old.weeks).forEach(function (week) {
+        C.sessions.forEach(function (s) {
+          if (s.week === Number(week)) fresh.sessions[s.id] = Date.now();
+        });
+      });
+    }
+    if (old.streak) {
+      fresh.streak = { last: old.streak.last, days: old.streak.days || 0, visits: old.streak.count || 0 };
+    }
+    try { localStorage.removeItem(LEGACY_KEY); } catch (e) { /* ignore */ }
+    return fresh;
+  }
+
+  var state = readJSON(KEY) || migrate();
+  state.cards = state.cards || {};
+  state.sessions = state.sessions || {};
+  state.quizzes = state.quizzes || [];
+  state.streak = state.streak || { last: null, days: 0, visits: 0 };
+  state.prefs = Object.assign(blank().prefs, state.prefs || {});
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); }
+    catch (e) { /* private mode: the session still works, it just won't persist */ }
+  }
+
+  /* ---------------- dates ---------------- */
+  function dayKey(date) {
+    var d = date || new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+
+  var WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+    'August', 'September', 'October', 'November', 'December'];
+
+  function longDate(date) {
+    var d = date || new Date();
+    return WEEKDAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()];
+  }
+
+  function shortDate(ts) {
+    var d = new Date(ts);
+    return d.getDate() + ' ' + MONTHS[d.getMonth()].slice(0, 3) + ' ' + d.getFullYear();
+  }
+
+  function touchStreak() {
+    var today = dayKey();
+    if (state.streak.last === today) return;
+    var yesterday = dayKey(new Date(Date.now() - 864e5));
+    state.streak.days = state.streak.last === yesterday ? (state.streak.days || 0) + 1 : 1;
+    state.streak.last = today;
+    state.streak.visits = (state.streak.visits || 0) + 1;
+    save();
+  }
+
+  /* ---------------- spaced repetition ---------------- */
+  var INTERVALS = [0, 0, 1, 3, 7, 16, 35]; // days, indexed by box
+  var MAX_BOX = 6;
+
+  function dueAt(card) {
+    var box = Math.min(Math.max(card.box || 0, 0), 6);
+    return (card.seen || 0) + INTERVALS[box] * 864e5;
+  }
+
+  function gradeWord(id, grade) {
+    var card = state.cards[id] || { box: 0, seen: 0, reps: 0 };
+    var box = card.box || 0;
+    card.reps = (card.reps || 0) + 1;
+    if (grade === 0) {
+      box = 0;                                                 // try again soon
+    } else if (grade === 1) {
+      box = Math.max(box, 1);                                  // getting there: hold
+    } else if (card.reps === 1) {
+      // First sighting, rated "I knew it": establish the card, do not promote.
+      // Rating a brand-new card as known used to jump it a box in the same
+      // breath as introducing it, and again from a correct quiz answer, so a
+      // word seen once could read as "known" without ever being recalled.
+      box = Math.max(box, 1);
+    } else {
+      box = Math.min(box + 1, MAX_BOX);                        // knew it: promote
+    }
+    card.box = box;
+    card.seen = Date.now();
+    card.lastGrade = grade;
+    state.cards[id] = card;
+    save();
+    return card;
+  }
+
+  /* ---------------- content selectors ---------------- */
+  var byId = {};
+  C.vocabulary.forEach(function (w) { byId[w.id] = w; });
+
+  var themeById = {};
+  C.themeMap.forEach(function (t) { themeById[t.id] = t; });
+
+  var sessionById = {};
+  C.sessions.forEach(function (s) { sessionById[s.id] = s; });
+
+  var dialogueById = {};
+  C.dialogues.forEach(function (d) { dialogueById[d.id] = d; });
+
+  var grammarById = {};
+  C.grammar.forEach(function (g) { grammarById[g.id] = g; });
+
+  /* ---------------- manual edits (Malagasy & phonetics) ---------------- */
+  var EDITS_KEY = 'salama_edits_v1';
+  var PROOFREAD_KEY = 'salama_proofread_v1';
+  var entryByKey = {};
+  var keyByMg = {};
+  var keyByNormMg = {};
+
+  function normMg(text) {
+    return String(text || '')
+      .toLowerCase()
+      .replace(/\(.*?\)/g, ' ')
+      .replace(/^.*?→\s*/, '')
+      .replace(/\b(izaho\s*\/\s*aho)\b/g, 'izaho')
+      .replace(/\b(iza\s+ny\s+anaranao)\b/g, 'iza no anaranao')
+      .replace(/\b(te\s*-\s*hi\s*…|te\s*-\s*hi\s*\.\.\.)/g, 'te')
+      .replace(/[.!?…,;:_\/\-—–=]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  C.dialogues.forEach(function (d) {
+    (d.lines || []).forEach(function (line, idx) {
+      var k = 'dlg:' + d.id + ':' + idx;
+      entryByKey[k] = line;
+      if (line.mg) {
+        var low = line.mg.trim().toLowerCase();
+        var nm = normMg(line.mg);
+        if (!keyByMg[low]) keyByMg[low] = k;
+        if (nm && !keyByNormMg[nm]) keyByNormMg[nm] = k;
+      }
+    });
+  });
+  C.phrases.forEach(function (p) {
+    var k = 'phrase:' + p.id;
+    entryByKey[k] = p;
+    if (p.mg) {
+      var low = p.mg.trim().toLowerCase();
+      var nm = normMg(p.mg);
+      keyByMg[low] = k;
+      if (nm) keyByNormMg[nm] = k;
+    }
+  });
+  C.vocabulary.forEach(function (w) {
+    var k = 'word:' + w.id;
+    entryByKey[k] = w;
+    if (w.mg && w.id !== 'eny_(visible)') {
+      var low = w.mg.trim().toLowerCase();
+      var nm = normMg(w.mg);
+      keyByMg[low] = k;
+      if (nm) keyByNormMg[nm] = k;
+    }
+  });
+  C.grammar.forEach(function (g) {
+    (g.rules || []).forEach(function (r, ri) {
+      (r.examples || []).forEach(function (ex, ei) {
+        var k = 'gram:' + g.id + ':' + ri + ':' + ei;
+        entryByKey[k] = ex;
+      });
+    });
+  });
+
+  var STALE_PRONS = {
+    'mahn-droo-SOO-ah': true,
+    'mee-peh-trah-peh-TRAH-hah': true,
+    'mee-peh-trah-PEH-trah-hah': true,
+    'mee-PEH-trah-PEH-trah-hah': true,
+    'mahn-droo-SOO-ah mee-peh-trah-peh-TRAH-hah': true,
+    'mahn-DROO-soo-ah mee-peh-trah-PEH-trah-hah': true,
+    'mahn-DROO-soo-ah mee-PEH-trah-PEH-trah-hah': true,
+    'mee-peh-TRAH-kah': true,
+    'HOH-dee': true
+  };
+
+  function loadEditsMap() {
+    var merged = {};
+    var p = readJSON(PROOFREAD_KEY) || {};
+    var e = readJSON(EDITS_KEY) || {};
+    Object.keys(p).forEach(function (k) { merged[k] = Object.assign({}, p[k]); });
+    Object.keys(e).forEach(function (k) { merged[k] = Object.assign({}, merged[k] || {}, e[k]); });
+    Object.keys(merged).forEach(function (k) {
+      var m = merged[k] || {};
+      if (m.pron && STALE_PRONS[m.pron]) delete m.pron;
+      if (m.mg === 'Haody!' || m.mg === 'Haody') delete m.mg;
+      if (k.indexOf('dlg:dlg_intro_') === 0 && m.mg && m.mg === m.mg.toUpperCase()) delete m.mg;
+      if (!m.mg && !m.pron && !m.en && !m.verdict && !m.note) delete merged[k];
+    });
+    return merged;
+  }
+
+  var editsMap = loadEditsMap();
+
+  function saveEditsMap() {
+    try {
+      localStorage.setItem(EDITS_KEY, JSON.stringify(editsMap));
+      localStorage.setItem(PROOFREAD_KEY, JSON.stringify(editsMap));
+    } catch (e) { /* private mode */ }
+  }
+
+  function applyEditToEntry(key, fields) {
+    var item = entryByKey[key];
+    if (!item || !fields) return false;
+    if (item._orig_mg === undefined) item._orig_mg = item.mg || '';
+    if (item._orig_pron === undefined) item._orig_pron = item.pron || '';
+    if (item._orig_en === undefined) item._orig_en = item.en || '';
+    if (item._orig_approx === undefined) item._orig_approx = Boolean(item.pron_approx);
+    if (item._orig_verified === undefined) item._orig_verified = Boolean(item.pron_verified);
+
+    if (fields.mg !== undefined && fields.mg !== '') {
+      item.mg = fields.mg;
+      keyByMg[item.mg.trim().toLowerCase()] = key;
+    } else {
+      item.mg = item._orig_mg;
+    }
+    if (fields.pron !== undefined && fields.pron !== '') {
+      item.pron = fields.pron;
+    } else {
+      item.pron = item._orig_pron;
+    }
+    if (fields.en !== undefined && fields.en !== '') {
+      item.en = fields.en;
+    } else {
+      item.en = item._orig_en;
+    }
+
+    var changed = (item.mg !== item._orig_mg) || (item.pron !== item._orig_pron);
+    if (changed) {
+      item.pron_edited = true;
+      item.pron_verified = true;
+      delete item.pron_approx;
+    } else {
+      delete item.pron_edited;
+      if (item._orig_verified) item.pron_verified = true;
+      else delete item.pron_verified;
+      if (item._orig_approx && !item.pron_verified) item.pron_approx = true;
+    }
+    return true;
+  }
+
+  Object.keys(editsMap).forEach(function (k) {
+    applyEditToEntry(k, editsMap[k]);
+  });
+
+  function entryForKey(key) { return entryByKey[key] || null; }
+
+  function keyForText(text) {
+    if (!text) return null;
+    var low = String(text).trim().toLowerCase();
+    if (keyByMg[low]) return keyByMg[low];
+    var nm = normMg(text);
+    return (nm && keyByNormMg[nm]) || null;
+  }
+
+  function getEdit(key) { return editsMap[key] || null; }
+
+  function saveEdit(key, fields) {
+    var item = entryByKey[key];
+    if (!item) return false;
+    if (item._orig_mg === undefined) item._orig_mg = item.mg || '';
+    if (item._orig_pron === undefined) item._orig_pron = item.pron || '';
+    if (item._orig_en === undefined) item._orig_en = item.en || '';
+
+    var cur = editsMap[key] || {};
+    if (fields.mg !== undefined) {
+      var nextMg = String(fields.mg).trim();
+      if (nextMg && nextMg !== item._orig_mg) cur.mg = nextMg;
+      else delete cur.mg;
+    }
+    if (fields.pron !== undefined) {
+      var nextPron = String(fields.pron).trim();
+      if (nextPron !== item._orig_pron) cur.pron = nextPron;
+      else delete cur.pron;
+    }
+    if (fields.en !== undefined) {
+      var nextEn = String(fields.en).trim();
+      if (nextEn && nextEn !== item._orig_en) cur.en = nextEn;
+      else delete cur.en;
+    }
+    editsMap[key] = cur;
+    applyEditToEntry(key, cur);
+    saveEditsMap();
+    return true;
+  }
+
+  function resetEdit(key) {
+    var item = entryByKey[key];
+    if (!item) return false;
+    if (editsMap[key]) {
+      delete editsMap[key].mg;
+      delete editsMap[key].pron;
+      delete editsMap[key].en;
+      if (!editsMap[key].verdict && !editsMap[key].note) delete editsMap[key];
+    }
+    applyEditToEntry(key, {});
+    saveEditsMap();
+    return true;
+  }
+
+  function editCount() {
+    return Object.keys(editsMap).filter(function (k) {
+      var m = editsMap[k];
+      return m && (m.mg !== undefined || m.pron !== undefined || m.en !== undefined);
+    }).length;
+  }
+
+  function resetAllEdits() {
+    Object.keys(editsMap).forEach(function (k) {
+      resetEdit(k);
+    });
+    editsMap = {};
+    saveEditsMap();
+  }
+
+  function exportEditsTSV() {
+    var keys = Object.keys(editsMap).filter(function (k) {
+      var m = editsMap[k];
+      return m && (m.mg !== undefined || m.pron !== undefined || m.en !== undefined || m.verdict || m.note);
+    });
+    if (!keys.length) return 0;
+    var header = ['key', 'section', 'original_mg', 'original_en', 'original_pron', 'verdict',
+                  'corrected_mg', 'corrected_en', 'corrected_pron', 'note'];
+    var lines = [header.join('\t')];
+    keys.sort().forEach(function (k) {
+      var item = entryByKey[k] || {};
+      var m = editsMap[k] || {};
+      var sec = k.indexOf('dlg:') === 0 ? 'sentences'
+              : k.indexOf('phrase:') === 0 ? 'phrases'
+              : k.indexOf('word:') === 0 ? 'words' : 'grammar';
+      var origMg = item._orig_mg !== undefined ? item._orig_mg : (item.mg || '');
+      var origEn = item._orig_en !== undefined ? item._orig_en : (item.en || '');
+      var origPron = item._orig_pron !== undefined ? item._orig_pron : (item.pron || '');
+      lines.push([
+        k, sec,
+        origMg.replace(/\t/g, ' '),
+        origEn.replace(/\t/g, ' '),
+        origPron.replace(/\t/g, ' '),
+        m.verdict || '',
+        (m.mg || '').replace(/\t/g, ' '),
+        (m.en || '').replace(/\t/g, ' '),
+        (m.pron || '').replace(/\t/g, ' '),
+        (m.note || '').replace(/\n/g, ' ').replace(/\t/g, ' ')
+      ].join('\t'));
+    });
+    var blob = new Blob(['\ufeff' + lines.join('\n')], { type: 'text/tab-separated-values' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'salama_corrections.tsv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    return keys.length;
+  }
+
+  function themeTitle(id) {
+    return themeById[id] ? themeById[id].title : String(id || '').replace(/_/g, ' ');
+  }
+
+  // Words that make sense as a single review card: no blanks, no essays.
+  var studyWords = C.vocabulary.filter(function (w) {
+    if (!w.en || !w.mg) return false;
+    if (w.en.length > 58) return false;
+    if (w.en.indexOf('...') !== -1 || w.mg.indexOf('...') !== -1 || w.mg.indexOf('___') !== -1) return false;
+    return true;
+  });
+
+  function wordsForTheme(theme) {
+    if (!theme || theme === 'all') return studyWords;
+    return studyWords.filter(function (w) { return (w.themes || []).indexOf(theme) !== -1; });
+  }
+
+  function isDue(card) { return dueAt(card) <= Date.now(); }
+
+  function dueWords(theme) {
+    return wordsForTheme(theme).filter(function (w) {
+      var card = state.cards[w.id];
+      return card && isDue(card);
+    }).sort(function (a, b) {
+      var ca = state.cards[a.id], cb = state.cards[b.id];
+      return (ca.box - cb.box) || (ca.seen - cb.seen);
+    });
+  }
+
+  function newWords(theme) {
+    return wordsForTheme(theme).filter(function (w) { return !state.cards[w.id]; });
+  }
+
+  function dueCount() { return dueWords('all').length; }
+
+  function knownCount() {
+    return Object.keys(state.cards).filter(function (id) {
+      return byId[id] && state.cards[id].box >= 3;
+    }).length;
+  }
+
+  function learningCount() {
+    return Object.keys(state.cards).filter(function (id) {
+      return byId[id] && state.cards[id].box < 3;
+    }).length;
+  }
+
+  function totalCards() { return studyWords.length; }
+
+  function quizAverage() {
+    if (!state.quizzes.length) return null;
+    var sum = state.quizzes.reduce(function (acc, q) { return acc + q.score / q.total; }, 0);
+    return Math.round((sum / state.quizzes.length) * 100);
+  }
+
+  /* ---------------- curriculum ---------------- */
+  function isSessionDone(id) { return Boolean(state.sessions[id]); }
+
+  function markSession(id) {
+    state.sessions[id] = Date.now();
+    save();
+  }
+
+  function unmarkSession(id) {
+    delete state.sessions[id];
+    save();
+  }
+
+  function nextSession() {
+    var pending = C.sessions.filter(function (s) { return !isSessionDone(s.id); });
+    return pending.length ? pending[0] : C.sessions[C.sessions.length - 1];
+  }
+
+  function sessionDoneCount() {
+    return C.sessions.filter(function (s) { return isSessionDone(s.id); }).length;
+  }
+
+  function weekDoneCount(week) {
+    var list = C.sessions.filter(function (s) { return s.week === week; });
+    return list.filter(function (s) { return isSessionDone(s.id); }).length;
+  }
+
+  function completedWeeks() {
+    return C.curriculum.filter(function (w) {
+      return weekDoneCount(w.week) === w.sessions.length;
+    }).length;
+  }
+
+  /* ---------------- preferences + data ---------------- */
+  function setPref(key, value) {
+    state.prefs[key] = value;
+    save();
+    applyPrefs();
+  }
+
+  var PALETTES = {
+    miteny:   { accent: '#123F2B', accentDeep: '#1B5B3E', accentSoft: '#FFF0B8', accent2: '#F26B1D', deep: '#0B2D1F' },
+    laterite: { accent: '#b2452a', accentDeep: '#8e331c', accentSoft: '#f7e5de', accent2: '#4f8a55', deep: '#4a2418' },
+    vanilla:  { accent: '#a8741c', accentDeep: '#825812', accentSoft: '#f6ecda', accent2: '#5f7f3a', deep: '#3a2a14' },
+    ravinala: { accent: '#2f7d5b', accentDeep: '#215c42', accentSoft: '#e1f0e9', accent2: '#c0582f', deep: '#163a2c' },
+    lamba:    { accent: '#3d5a9e', accentDeep: '#2b4278', accentSoft: '#e3e9f6', accent2: '#b5612f', deep: '#1c2440' }
+  };
+
+  var FONTS = {
+    fraunces:  { display: "'Fraunces', Georgia, serif", body: "'Public Sans', system-ui, sans-serif" },
+    gloock:    { display: "'Gloock', Georgia, serif", body: "'Instrument Sans', system-ui, sans-serif" },
+    young:     { display: "'Young Serif', Georgia, serif", body: "'Work Sans', system-ui, sans-serif" },
+    bricolage: { display: "'Bricolage Grotesque', system-ui, sans-serif", body: "'Bricolage Grotesque', system-ui, sans-serif" }
+  };
+
+  function applyPrefs() {
+    var root = document.documentElement;
+    if (!root || !root.setAttribute) return;
+    root.setAttribute('data-textsize', String(state.prefs.textsize || 0));
+    var dir = state.prefs.direction || 'miteny';
+    var rawMode = state.prefs.mode || 'auto';
+    var mode = rawMode === 'auto' ? (dir === 'dusk' ? 'dark' : 'light') : rawMode;
+    root.setAttribute('data-dir', dir);
+    root.setAttribute('data-mode', mode);
+    if (root.style && root.style.setProperty) {
+      var pal = PALETTES[state.prefs.palette] || PALETTES.miteny;
+      root.style.setProperty('--accent', pal.accent);
+      root.style.setProperty('--accent-deep', pal.accentDeep);
+      root.style.setProperty('--accent-soft', pal.accentSoft);
+      root.style.setProperty('--accent-2', pal.accent2);
+      if (mode === 'light' && dir !== 'dusk') {
+        root.style.setProperty('--deep', pal.deep);
+      } else {
+        root.style.removeProperty('--deep');
+      }
+      var f = FONTS[state.prefs.font] || FONTS.fraunces;
+      root.style.setProperty('--f-display', f.display);
+      root.style.setProperty('--f-body', f.body);
+    }
+  }
+
+  function exportData() {
+    var payload = {
+      app: 'Salama! — Learn Malagasy',
+      exportedAt: new Date().toISOString(),
+      state: state
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'salama-progress-' + dayKey() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+
+  /**
+   * Restore a file written by exportData(). Accepts both shapes: the wrapped
+   * {app, exportedAt, state} and a bare state object. Returns a short summary
+   * or throws with a readable reason, so Settings can tell the learner what
+   * happened instead of a silent no-op.
+   */
+  function importData(text) {
+    var payload;
+    try { payload = JSON.parse(text); }
+    catch (e) { throw new Error('That file is not JSON.'); }
+    var incoming = payload && payload.state ? payload.state : payload;
+    if (!incoming || typeof incoming !== 'object' || !incoming.cards) {
+      throw new Error('That file does not look like a Salama! backup.');
+    }
+    var fresh = blank();
+    fresh.cards = incoming.cards || {};
+    fresh.sessions = incoming.sessions || {};
+    fresh.quizzes = Array.isArray(incoming.quizzes) ? incoming.quizzes.slice(-40) : [];
+    fresh.streak = incoming.streak || fresh.streak;
+    fresh.prefs = Object.assign(fresh.prefs, incoming.prefs || {});
+    Object.keys(state).forEach(function (k) { delete state[k]; });
+    Object.keys(fresh).forEach(function (k) { state[k] = fresh[k]; });
+    save();
+    applyPrefs();
+    return {
+      sessions: Object.keys(state.sessions).length,
+      words: Object.keys(state.cards).length
+    };
+  }
+
+  function resetData() {
+    // Mutate in place so every view holding S.core.state sees the reset.
+    var fresh = blank();
+    Object.keys(state).forEach(function (k) { delete state[k]; });
+    Object.keys(fresh).forEach(function (k) { state[k] = fresh[k]; });
+    save();
+    applyPrefs();
+  }
+
+  S.core = {
+    data: C,
+    state: state,
+    save: save,
+    gradeWord: gradeWord,
+    dueAt: dueAt,
+    dueWords: dueWords,
+    newWords: newWords,
+    dueCount: dueCount,
+    knownCount: knownCount,
+    learningCount: learningCount,
+    totalCards: totalCards,
+    quizAverage: quizAverage,
+    wordsForTheme: wordsForTheme,
+    themeTitle: themeTitle,
+    themeById: themeById,
+    wordById: function (id) { return byId[id]; },
+    session: function (id) { return sessionById[id]; },
+    sessionById: sessionById,
+    dialogue: function (id) { return dialogueById[id]; },
+    grammar: function (id) { return grammarById[id]; },
+    isSessionDone: isSessionDone,
+    markSession: markSession,
+    unmarkSession: unmarkSession,
+    nextSession: nextSession,
+    sessionDoneCount: sessionDoneCount,
+    weekDoneCount: weekDoneCount,
+    completedWeeks: completedWeeks,
+    touchStreak: touchStreak,
+    longDate: longDate,
+    shortDate: shortDate,
+    dayKey: dayKey,
+    setPref: setPref,
+    applyPrefs: applyPrefs,
+    exportData: exportData,
+    importData: importData,
+    resetData: resetData,
+    entryForKey: entryForKey,
+    keyForText: keyForText,
+    getEdit: getEdit,
+    saveEdit: saveEdit,
+    resetEdit: resetEdit,
+    resetAllEdits: resetAllEdits,
+    editCount: editCount,
+    exportEditsTSV: exportEditsTSV,
+    reload: function (nextState) { state = nextState; }
+  };
+})(window.Salama);

@@ -1,0 +1,9 @@
+{
+  "note": "Per-entry voice choice. Default is Abidi wherever a clip exists; entries listed here with 'mms' stay on the Meta MMS clip because a native speaker heard both and preferred MMS for that word.",
+  "entries": {
+    "word:veloma": "mms",
+    "phrase:rpb_veloma": "mms",
+    "word:salama": "abidi",
+    "phrase:wv_hello": "abidi"
+  }
+}
