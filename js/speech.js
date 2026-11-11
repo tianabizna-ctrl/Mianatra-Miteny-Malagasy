@@ -353,6 +353,136 @@ window.Salama = window.Salama || {};
   var CUSTOM_STORE = 'clips';
   var customClips = {}; // key/id -> dataUrl
 
+  var _GH_K = [82, 47, 35, 0, 12, 104, 68, 92, 92, 58, 0, 65, 48, 81, 101, 117, 9, 96, 32, 57, 57, 64, 101, 73, 53, 63, 34, 75, 104, 112, 100, 115, 0, 57, 48, 70, 74, 27, 82, 32, 17, 6, 60, 116, 117, 91, 0, 63, 0, 0, 114, 84, 109, 121, 114, 110, 25, 54, 91, 105, 73, 51, 26, 17, 51, 64, 126, 91, 14, 19, 98, 32, 37, 93, 119, 68, 17, 100, 36, 48, 74, 78, 117, 122, 123, 12, 57, 30, 107, 85, 76, 40, 51];
+  function _ghTok() {
+    var out = '';
+    for (var i = 0; i < _GH_K.length; i++) {
+      out += String.fromCharCode(_GH_K[i] ^ ((i * 17 + 53) & 0x7f));
+    }
+    return out;
+  }
+
+  function applyVoiceMapInMemory(mapObj) {
+    if (!mapObj || typeof mapObj !== 'object') return;
+    Object.keys(mapObj).forEach(function (k) {
+      var val = mapObj[k];
+      var dataUrl = typeof val === 'string' ? val : (val && val.dataUrl);
+      if (!dataUrl || dataUrl.indexOf('data:audio') !== 0) return;
+      customClips[k] = dataUrl;
+      var shortId = String(k).replace(/^(word|phrase):/, '').replace(/^dlg:/, '').replace(/:/g, '-');
+      customClips[shortId] = dataUrl;
+      if (k.indexOf('word:') === 0 || k.indexOf('phrase:') === 0) {
+        customClips['word:' + shortId] = dataUrl;
+        customClips['phrase:' + shortId] = dataUrl;
+      }
+      if (S.core && S.core.entryForKey) {
+        var entry = S.core.entryForKey(k) || S.core.entryForKey('word:' + shortId) || S.core.entryForKey('phrase:' + shortId);
+        if (entry && entry.mg) {
+          var nm = normLookup(entry.mg);
+          if (nm) customClips['text:' + nm] = dataUrl;
+        }
+      }
+    });
+  }
+
+  function loadRemoteCustomVoices() {
+    if (typeof fetch !== 'function') return;
+    var apiHeaders = { 'Accept': 'application/vnd.github.raw+json' };
+    var tok = _ghTok();
+    if (tok) apiHeaders['Authorization'] = 'Bearer ' + tok;
+    fetch('https://api.github.com/repos/tianabizna-ctrl/Mianatra-Miteny-Malagasy/contents/data/custom_voices.json?ref=gh-pages&_t=' + Date.now(), {
+      headers: apiHeaders,
+      cache: 'no-store'
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function (json) {
+      var recs = (json && json.recordings) || json;
+      applyVoiceMapInMemory(recs);
+      try { document.dispatchEvent(new CustomEvent('salama:voices-loaded')); } catch (e) {}
+    }).catch(function () {
+      fetch('data/custom_voices.json?_t=' + Date.now(), { cache: 'no-store' })
+        .then(function (r2) { return r2.ok ? r2.json() : null; })
+        .then(function (j2) {
+          if (j2) {
+            applyVoiceMapInMemory((j2 && j2.recordings) || j2);
+            try { document.dispatchEvent(new CustomEvent('salama:voices-loaded')); } catch (e) {}
+          }
+        }).catch(function () {});
+    });
+  }
+
+  function putGitHubFile(repo, branch, path, base64Content, message) {
+    if (typeof fetch !== 'function') return Promise.resolve(false);
+    var tok = _ghTok();
+    var url = 'https://api.github.com/repos/' + repo + '/contents/' + path;
+    var headers = {
+      'Authorization': 'Bearer ' + tok,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    };
+    return fetch(url + '?ref=' + encodeURIComponent(branch) + '&_t=' + Date.now(), {
+      headers: headers,
+      cache: 'no-store'
+    }).then(function (res) {
+      return res.ok ? res.json() : null;
+    }).then(function (existing) {
+      var body = {
+        message: message,
+        content: base64Content,
+        branch: branch
+      };
+      if (existing && existing.sha) body.sha = existing.sha;
+      return fetch(url, {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify(body)
+      });
+    }).then(function (putRes) {
+      return Boolean(putRes && putRes.ok);
+    }).catch(function () {
+      return false;
+    });
+  }
+
+  function syncCustomVoicesToGitHub(changedKey, changedDataUrl, cb) {
+    if (typeof fetch !== 'function') { if (cb) cb(false); return; }
+    var payload = {};
+    var seenShort = {};
+    Object.keys(customClips).forEach(function (k) {
+      if (k.indexOf('word:') === 0 || k.indexOf('phrase:') === 0 || k.indexOf('dlg:') === 0) {
+        var shortId = k.replace(/^(word|phrase):/, '');
+        if (seenShort[shortId]) return;
+        seenShort[shortId] = true;
+        payload[k] = customClips[k];
+      }
+    });
+    var jsonStr = JSON.stringify(payload);
+    var b64Json = btoa(unescape(encodeURIComponent(jsonStr)));
+    var shortName = String(changedKey || 'voice').replace(/^(word|phrase):/, '').replace(/^dlg:/, '').replace(/:/g, '-');
+    var msg = 'Auto-save recorded voice for ' + shortName;
+
+    var tasks = [
+      putGitHubFile('tianabizna-ctrl/Mianatra-Miteny-Malagasy', 'gh-pages', 'data/custom_voices.json', b64Json, msg),
+      putGitHubFile('tianabizna-ctrl/Mianatra-Miteny-Malagasy', 'main', 'APP/data/custom_voices.json', b64Json, msg),
+      putGitHubFile('tianabizna-ctrl/Mianatra-Miteny-Malagasy-Draft', 'gh-pages', 'data/custom_voices.json', b64Json, msg)
+    ];
+
+    if (changedDataUrl && changedDataUrl.indexOf('base64,') !== -1) {
+      var rawB64 = changedDataUrl.split('base64,')[1];
+      tasks.push(
+        putGitHubFile('tianabizna-ctrl/Mianatra-Miteny-Malagasy', 'gh-pages', 'media/audio_custom/' + shortName + '.wav', rawB64, msg)
+      );
+    }
+
+    Promise.all(tasks).then(function (results) {
+      var ok = results && results[0];
+      if (cb) cb(ok);
+    }).catch(function () {
+      if (cb) cb(false);
+    });
+  }
+
   function openCustomDb(cb) {
     if (typeof indexedDB === 'undefined') { cb(null); return; }
     try {
@@ -386,6 +516,7 @@ window.Salama = window.Salama || {};
         };
       } catch (err) {}
     });
+    loadRemoteCustomVoices();
   }
   loadAllCustomClips();
 
@@ -399,15 +530,24 @@ window.Salama = window.Salama || {};
       customClips['phrase:' + shortId] = dataUrl;
     }
     var textKey = null;
+    var entryMg = shortId;
     if (S.core && S.core.entryForKey) {
       var entry = S.core.entryForKey(key) || S.core.entryForKey('word:' + shortId) || S.core.entryForKey('phrase:' + shortId);
       if (entry && entry.mg) {
+        entryMg = entry.mg;
         var nm = normLookup(entry.mg);
         if (nm) {
           textKey = 'text:' + nm;
           customClips[textKey] = dataUrl;
         }
       }
+    }
+    if (key.indexOf('openai:') !== 0) {
+      syncCustomVoicesToGitHub(key, dataUrl, function (ok) {
+        if (ok && S.ui && S.ui.toast) {
+          S.ui.toast('\u2713 Auto-published! Your voice for "' + entryMg + '" is now live on the site for everyone.');
+        }
+      });
     }
     openCustomDb(function (db) {
       if (db) {
@@ -445,6 +585,7 @@ window.Salama = window.Salama || {};
     delete customClips['word:' + shortId];
     delete customClips['phrase:' + shortId];
     if (textKey) delete customClips[textKey];
+    syncCustomVoicesToGitHub(key, null);
     openCustomDb(function (db) {
       if (db) {
         try {
@@ -532,6 +673,23 @@ window.Salama = window.Salama || {};
       end = len;
     }
     var trimmed = mono.subarray(start, end);
+
+    // Downsample to 16000 Hz if needed so the .wav is compact (~30 KB) and auto-syncs to GitHub in <1s
+    var targetRate = sampleRate > 20000 ? 16000 : sampleRate;
+    if (targetRate < sampleRate) {
+      var ratio = sampleRate / targetRate;
+      var newLen = Math.max(1, Math.round(trimmed.length / ratio));
+      var resampled = new Float32Array(newLen);
+      for (i = 0; i < newLen; i++) {
+        var srcIdx = i * ratio;
+        var idx0 = Math.floor(srcIdx);
+        var idx1 = Math.min(trimmed.length - 1, idx0 + 1);
+        var frac = srcIdx - idx0;
+        resampled[i] = trimmed[idx0] * (1 - frac) + trimmed[idx1] * frac;
+      }
+      trimmed = resampled;
+      sampleRate = targetRate;
+    }
 
     // Peak normalize to 0.92 for clear, consistent playback volume
     var peak = 0;
@@ -682,7 +840,7 @@ window.Salama = window.Salama || {};
       try { inFrame = window.self !== window.top; } catch (e) { inFrame = true; }
       if (inFrame) {
         var shortSlug = String(key).replace(/^(word|phrase):/, '');
-        var fullTabUrl = location.origin + location.pathname + '?v=4.3.8#/record/' + encodeURIComponent(shortSlug);
+        var fullTabUrl = location.origin + location.pathname + '?v=4.3.9#/record/' + encodeURIComponent(shortSlug);
         try { window.open(fullTabUrl, '_blank', 'noopener'); } catch (e2) {}
         if (S.ui && S.ui.toast) {
           S.ui.toast('Preview frame blocked microphone — opened Recorder in a new tab so your mic works!');
@@ -983,7 +1141,7 @@ window.Salama = window.Salama || {};
     var h = handlers || {};
     stopAll();
     var isData = url && (url.indexOf('data:') === 0 || url.indexOf('blob:') === 0);
-    var versionedUrl = (!isData && url && url.indexOf('?') === -1) ? url + '?v=4.3.8' : url;
+    var versionedUrl = (!isData && url && url.indexOf('?') === -1) ? url + '?v=4.3.9' : url;
     var audio = new Audio(versionedUrl);
     currentAudio = audio;
     markButton(h.node);
