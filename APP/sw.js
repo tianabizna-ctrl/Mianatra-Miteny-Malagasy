@@ -1,5 +1,5 @@
 /* Salama! offline cache. Network-first for all assets so fresh audio and phonetics always win when online. */
-const CACHE = 'salama-v4.3.8';
+const CACHE = 'salama-v4.3.9';
 const ASSETS = [
   './',
   './index.html',

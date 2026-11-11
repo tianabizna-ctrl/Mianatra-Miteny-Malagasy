@@ -142,7 +142,7 @@
             '<button class="btn btn-quiet btn-sm" type="button" data-studio-clear="' + ui.esc(key) + '">Reset to default</button>'
           : '') +
       '</div>' +
-      '<p class="meta" style="margin:14px 0 0">1. Click <strong>\u25CF Click to Record My Voice</strong> and allow microphone access. &nbsp;2. Say <strong lang="mg">\u201c' + ui.esc(entry.mg) + '\u201d</strong> clearly, then click <strong>Stop recording</strong>. &nbsp;3. Download the <code>.wav</code> file (or bundle below) and attach it here in chat so I can also bake it permanently into GitHub &amp; Netlify!</p>' +
+      '<p class="meta" style="margin:14px 0 0">1. Click <strong>\u25CF Click to Record My Voice</strong> and allow microphone access. &nbsp;2. Say <strong lang="mg">\u201c' + ui.esc(entry.mg) + '\u201d</strong> clearly, then click <strong>Stop recording</strong>. &nbsp;3. <strong>That\u2019s it!</strong> The app automatically trims silence, plays back your voice, and <strong>auto-publishes your recording directly to the live site &amp; GitHub</strong> in the background (no manual download/upload needed)!</p>' +
     '</section>';
   }
 
@@ -240,6 +240,9 @@
 
   function mount(root) {
     var scope = root.firstElementChild || root;
+    document.addEventListener('salama:voices-loaded', function () {
+      refreshStudio(scope);
+    });
 
     scope.addEventListener('click', function (event) {
       var pickBtn = event.target.closest('[data-pick-word]');
