@@ -1,13 +1,11 @@
 # Salama! — Learn Malagasy
 
-A static, installable web app for absolute beginners learning Malagasy. No build
-step, no dependencies, no server logic.
+An offline-first, installable web app that teaches Malagasy to an absolute beginner.
+12 weeks, 36 sessions, 2,478 dictionary entries, 717 phrases, 33 dialogues, 27 grammar
+topics and 161 culture notes. Static files only: no build step, no dependencies at
+runtime, no server logic.
 
-<!-- counts:start -->
-**Current build:** 2198 dictionary entries, 712 phrases, 33 dialogues, 27 grammar topics, 155 culture notes, 36 sessions over 12 weeks. Pronunciation is written for 100% of words and phrases.
-<!-- counts:end -->
-
-The block above is written by `RESEARCH/build_app_data.py`; do not edit it by hand.
+<sub>Version 3.4 · November 2026 · part of the Vahiny Mianatra Malagasy project</sub>
 
 ## Run it
 
@@ -17,95 +15,81 @@ python3 -m http.server 8788
 # open http://127.0.0.1:8788
 ```
 
-Opening `index.html` directly also works; only the offline cache needs `http(s)`.
+Opening `APP/index.html` directly also works; only the offline cache needs `http(s)`.
+Install it from the browser menu to get an app icon and offline use.
 
-## Screens
+## Reviewed by a native speaker
 
-| Route | What it does |
-|---|---|
-| `#/today` | The next session (with its dialogue preview) and the due review count |
-| `#/course`, `#/course/3` | The 12-week outline and one week's three sessions |
-| `#/session/w1s2` | Runner: warm-up dialogue → new words → roleplay → finish |
-| `#/review`, `#/review/round` | A bounded 10 or 15 card round: reveal the meaning, then rate it |
-| `#/quiz` | Multiple choice practice (5, 10 or 15 questions) |
-| `#/reference/phrases` etc. | Phrases, words, grammar, culture, pronunciation |
-| `#/dialogue/:id` | One dialogue transcript, line by line audio |
-| `#/progress` | Sessions, weeks, word counts, quiz history |
-| `#/settings` | Text size, speaking speed, voice, syllable mode, export/restore and reset |
+`PROOFREAD.html` is a review sheet (open it in a browser, no server needed) that
+lists all 3,843 Malagasy entries — sentences, phrases, words, grammar examples and
+notes — so a Malagasy speaker can mark ✔ / ✘ and type corrections. The export feeds
+`RESEARCH/apply_corrections.py`; approved entries lose the *(approx.)* label and show
+**✓ checked** in the app. See `RESEARCH/PROOFREADING.md`.
 
-## Files
+## Voices
+
+Every word, phrase and dialogue sentence is spoken by **Abidi**
+(abidi.artifisialy.mg), a Malagasy text-to-speech service — 3,377 clips, 28.6 MB.
+A native speaker judged it markedly better than the Meta MMS voice the app used
+before; the exceptions are pinned per entry in `RESEARCH/VOICE_MAP.json` (MMS reads
+*veloma* correctly). Twelve dialogue lines are placeholders copied from the source
+packs, not spoken Malagasy, and were deliberately left without a recording.
+`RESEARCH/ABIDI.md` has the details, the licence state and the note to the service.
+
+## What is in here
 
 ```
-index.html              shell, inline SVG icon sprite, script order
-styles.css              design tokens + all styling (no framework)
-app.js                  router and header controls
-js/core.js              stored state, spaced repetition, progress selectors
-js/speech.js            recorded clips, Malagasy→fallback-voice adapter, syllable shaping
-js/ui.js                escaping, icons, toast, reference tabs
-js/views/*.js            one file per screen
-data/content.js         generated — do not edit by hand
-media/audio/            the 14 Peace Corps Malagasy recordings
-manifest.webmanifest    install metadata
-sw.js                   offline cache (shell on install, audio on first play)
+APP/                    the app itself (static)
+  index.html            shell, inline SVG icons, script order
+  styles.css            design tokens + all styling (no framework)
+  app.js                router and header controls
+  js/core.js            stored state, spaced repetition, progress selectors
+  js/speech.js          rendered clips, Malagasy→voice adapter, syllable shaping
+  js/ui.js              escaping, icons, toast, the shared Listen/Syllables controls
+  js/views/*.js         one file per screen
+  data/content.js       generated — do not edit by hand
+  media/audio/          15 Peace Corps recordings + rendered words/ and lines/
+  manifest.webmanifest  install metadata
+  sw.js                 offline cache
+RESEARCH/               the content pipeline, the audio renderer, and the checks
+MALAGASY ASSETS/        source dictionaries and course material (unchanged)
+extracted/              text extracted from those sources (unchanged)
 ```
 
-## Content pipeline
-
-`data/content.js` is generated. Edit the generator, not the output. From the repository root:
+## The checks (all green)
 
 ```bash
-python3 RESEARCH/build_app_data.py     # rebuilds APP/data/content.js
-python3 RESEARCH/validate_content.py   # fails on bad pairs, missing audio, etc.
+python3 RESEARCH/build_app_data.py       # rebuild APP/data/content.js + README counts
+python3 RESEARCH/validate_content.py     # content and pronunciation gates
+python3 RESEARCH/test_pronunciation.py   # 28 unit tests on the pronunciation rules
+python3 RESEARCH/check_parity.py         # Python and JavaScript adapters must agree
+node RESEARCH/smoke_app.js               # every screen renders, every handler runs
 ```
 
-* `RESEARCH/build_app_data.py` — assembles vocabulary, phrases, dialogues, grammar, culture, the 12-week curriculum, session → dialogue/audio mappings and topic shelves.
-* `RESEARCH/content_quality.py` — the repair rules: stripping contaminated glosses, detecting English in the Malagasy column, splitting dialect annotations, consolidating 30 phrase groups into 15, and generating labelled approximate pronunciations.
+## Audio, honestly
 
-Repairs are reported on every build (gloss segments fixed, phrases dropped, pronunciations generated).
+Three layers, tried in that order:
 
-## Audio
+1. **A rendered Malagasy clip** (`media/audio/words/<id>.mp3`,
+   `media/audio/lines/<dialogue>-<n>.mp3`) — spoken by Meta's MMS Malagasy model, so the
+   pronunciation is Malagasy, not an accent of French.
+2. **The best installed system voice**, with Malagasy rewritten into that language's
+   spelling (`o`→`ou`, `j`→`dz`, `ao`→`ô`) and delivered one syllable at a time.
+3. **The Peace Corps recordings**, which are the human reference for listening.
 
-Three layers, tried in this order:
+Two things are still true and are stated in the app: no device ships an *installed*
+Malagasy voice, and **no native speaker has reviewed the pronunciation yet**. The review
+sheet for that is `RESEARCH/pron_qa.html`; the ten questions worth asking first are in
+`RESEARCH/SPEAKER_QUESTIONS.md`; the evidence behind every rule is in
+`RESEARCH/PRONUNCIATION.md`.
 
-1. **A rendered Malagasy clip** — `media/audio/words/`, `phrases/` and `lines/`, written
-   by `RESEARCH/render_audio.py` from Meta's MMS Malagasy model. This build ships
-   **2,466 word clips, 711 phrase clips and 196 dialogue-line clips** (~19 MB, mono
-   mp3, cached on first play by the service worker). This is the only layer that is real
-   Malagasy rather than an approximation, and it covers everything a session uses.
-2. **The best installed voice**, rewritten for that language: Malagasy `o` becomes
-   French `ou`, `j` becomes `dz`, `ao` becomes `ô`, and the word is handed over one
-   syllable at a time so a French voice neither nasalises `an/on/in` nor swallows a
-   final vowel. Voice order is `mg, fr, ro, it, es, pt, ca, en`; Romanian is ahead of
-   Italian because it pronounces `h` and has `ț` = [ts].
-3. **Session recordings** — the public-domain Peace Corps Malagasy Language Lessons in
-   `media/audio/` — are the reference for listening, and are always played as recorded.
+Licences: session audio is public domain (Peace Corps); rendered word and line audio is
+CC BY-NC 4.0 (Meta MMS) — free for personal, non-commercial use with attribution;
+traveler phrases and the guide are CC BY-SA 3.0 (Wikivoyage). Details in `APP/README.md`.
 
-Every generated pronunciation is labelled *approx.* in the UI. Nothing has been checked
-by a native speaker yet: `RESEARCH/pron_qa.py` builds a review sheet for that, and
-`RESEARCH/PRONUNCIATION.md` records what is settled and what is still inference.
+## Credits
 
-Settings offers a slower rate, a per-word **Syllables** button, and a voice picker.
-
-## Known limits
-
-* No phone, tablet or desktop ships an *installed* Malagasy voice (checked November
-  2026). 18 entries have no clip (their ids collide on a filename) and use the fallback.
-* The clips come from a statistical model, not a person: stress on long phrases and the
-  reading of abbreviations can still be wrong, and none of it has been checked by a
-  native speaker yet.
-* The adapter cannot reproduce `tr` [ʈʂ] / `dr` [ɖʐ] with a French voice, or French
-  final-syllable stress. Rendered clips solve this; nothing else does.
-* Stress is penultimate by default. Words where the hand table and the printed
-  dictionary disagree (currently 3) are listed in `RESEARCH/pron_qa.html`.
-* Progress lives in `localStorage`. Settings → Export progress writes a backup file and
-  Restore from file reads it back.
-
-## Checks
-
-```bash
-python3 RESEARCH/build_app_data.py        # regenerate data/content.js
-python3 RESEARCH/validate_content.py      # content + pronunciation gates, fails loudly
-python3 RESEARCH/test_pronunciation.py    # 28 unit tests on the rules
-python3 RESEARCH/check_parity.py          # Python and JS adapters must agree
-node RESEARCH/smoke_app.js                # every screen renders and every handler runs
-```
+Lessons, curriculum, app and audio pipeline are original work. Sources are used as
+compiled reference material: Peace Corps Malagasy Language Lessons (public domain),
+Rasoloson's Malagasy–English dictionary (for stress marks), Wikivoyage's Malagasy
+phrasebook (CC BY-SA 3.0), Bako's Mandritsara lesson notes (linked, not republished).
