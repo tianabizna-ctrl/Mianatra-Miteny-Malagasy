@@ -1,7 +1,8 @@
 # Salama! — Learn Malagasy
 
-A static, installable web app for absolute beginners learning Malagasy. No build
-step, no dependencies, no server logic.
+A static, installable app for learning Official Malagasy through a beginner
+course, intermediate practice and advanced grammar. No build step, no runtime
+dependencies, no server logic.
 
 <!-- counts:start -->
 **Current build:** 2198 dictionary entries, 712 phrases, 33 dialogues, 27 grammar topics, 155 culture notes, 36 sessions over 12 weeks. Pronunciation is written for 100% of words and phrases.
@@ -25,6 +26,9 @@ Opening `index.html` directly also works; only the offline cache needs `http(s)`
 |---|---|
 | `#/today` | The next session (with its dialogue preview) and the due review count |
 | `#/course`, `#/course/3` | The 12-week outline and one week's three sessions |
+| `#/learn`, `#/learn/intermediate`, `#/learn/advanced` | 61 Official Malagasy lessons across three pathways |
+| `#/skills/grammar` etc. | Grammar, verb forms, reading, writing, drills, listening and speaking |
+| `#/study/gram_16b/read` etc. | Lesson activities, saved writing drafts and answer-comparison drills |
 | `#/session/w1s2` | Runner: warm-up dialogue → new words → roleplay → finish |
 | `#/review`, `#/review/round` | A bounded 10 or 15 card round: reveal the meaning, then rate it |
 | `#/quiz` | Multiple choice practice (5, 10 or 15 questions) |
@@ -50,6 +54,13 @@ sw.js                   offline cache (shell on install, audio on first play)
 ```
 
 ## Content pipeline
+
+The extended course is independent of the base dataset. Edit
+`RESEARCH/study_curriculum.py`, then run `python3 RESEARCH/build_study_data.py`.
+It builds `data/study.js` without changing the 36 beginner sessions or custom
+recordings. See `RESEARCH/COURSE_INTEGRATION.md` for the content and language policy.
+Do not blindly regenerate the older base dataset: its generator does not yet
+reproduce all current session-word, roleplay and custom-voice additions.
 
 `data/content.js` is generated. Edit the generator, not the output. From the repository root:
 
@@ -103,9 +114,15 @@ Settings offers a slower rate, a per-word **Syllables** button, and a voice pick
 ## Checks
 
 ```bash
-python3 RESEARCH/build_app_data.py        # regenerate data/content.js
+python3 RESEARCH/build_study_data.py      # regenerate only data/study.js
+python3 RESEARCH/test_study_content.py    # course coverage, Official-only teaching content and cross-links
+node RESEARCH/test_study.js               # drafts, completion, drills, import/reset and legacy backups
 python3 RESEARCH/validate_content.py      # content + pronunciation gates, fails loudly
 python3 RESEARCH/test_pronunciation.py    # 28 unit tests on the rules
 python3 RESEARCH/check_parity.py          # Python and JS adapters must agree
 node RESEARCH/smoke_app.js                # every screen renders and every handler runs
 ```
+
+Known baseline limits: the old content gate encounters list-valued pronunciation
+fields and three pronunciation tests disagree with the current stress table.
+The new extension checks are independent; Python/JS adapter parity passes.

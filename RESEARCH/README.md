@@ -31,9 +31,10 @@
    for the map). The only two PDFs without a text layer are pure scans (the 175-page Official
    Volunteer Manual and the 176-page French `ED454700.pdf`) — they still open fine as PDFs.
 3. ✅ Researched bako.blog: found that its downloads page loads the lesson list from
-   `lessons.json`. Fetched it and **downloaded all 58 lesson PDFs** (8 introductory, 28 grammar,
-   23 thematic across 15 themes) → `MALAGASY ASSETS/bako-blog-lessons/`, with plain-text
-   extractions in `extracted/bako-text/`.
+   `lessons.json`. The current local collection at `/Users/tianaalbert/bako_pdfs`
+   contains **61 PDFs / 206 pages** (8 introductory, 29 grammar, 24 thematic).
+   Text and diagram OCR are extracted locally; 61 Official Malagasy adaptations
+   are added to the app. See `COURSE_INTEGRATION.md` and `COURSE_CURRICULUM_MAP.md`.
 4. ✅ Built a **starter content pack** (`CONTENT_PACK_STARTER.json`): 71 survival phrases in 6
    units and 111 vocabulary words in 7 groups, all cross-referenced with the matching Peace Corps
    audio files — ready to be loaded by a website or app.
@@ -63,7 +64,9 @@
 - **Cite-and-link, or get permission:** Bako's lesson PDFs. Her content is on a public GitHub Pages
   site (mandritsara.github.io/bako) with no stated licence; the mandritsara.org project is a
   mission project, so an email asking permission will likely get a warm yes. Meanwhile the lesson
-  catalog at `extracted/bako_lessons.json` documents exactly what exists.
+   catalog at `extracted/bako_lessons.json` documents exactly what exists.
+   Update, 19 November 2026: the maintainer confirmed permission to publish the
+   course material and requested neutral product branding. See `COURSE_INTEGRATION.md`.
 - **Your own content:** The MIANATRA/FIANARANA docs and this content pack are yours — no limits.
 - **Audio licensing caution for the app:** if you plan studio audio (e.g., speech synthesis or
   native recordings you commission), you own those rights outright.
@@ -77,9 +80,9 @@
    sessions per week, each with dialogue → phonetics → roleplay.
 3. **Audio layer:** the 14 Peace Corps MP3s match perfectly with lessons 1–14 of the 32-lesson
    text course; assign them as daily 10-minute "homework listening".
-4. **Dialect choice:** teach official Malagasy as the base (all materials support it) but include
-   Bako's Tsimihety variants as "as spoken in Mandritsara" notes — exactly the bilingual approach
-   her lessons use.
+4. **Language choice:** the owner's current requirement is Official Malagasy only.
+   Keep Bako's everyday situations, but convert regional vocabulary and patterns;
+   do not show parallel regional forms in the learning interface.
 5. **Flashcards:** vocabulary from `CONTENT_PACK_STARTER.json` is image-first (no English on the
    card face, per your teaching docs' TPR method). The VOAMBOLANA MALAGASY.jpg you already have
    could be the homepage hero image.

@@ -128,9 +128,13 @@ const context = vm.createContext(sandbox);
 /* ---------------- load the app in the browser's script order ---------------- */
 const files = [
   'data/content.js',
+  'data/study.js',
   'js/core.js',
   'js/speech.js',
   'js/ui.js',
+  'js/study-core.js',
+  'js/views/study-hub.js',
+  'js/views/study-lesson.js',
   'js/views/today.js',
   'js/views/course.js',
   'js/views/session.js',
@@ -176,6 +180,12 @@ const routes = [
   ['today', ['today']],
   ['course', ['course']],
   ['course week', ['course', '3']],
+  ['learning levels', ['learn']],
+  ['intermediate pathway', ['learn', 'intermediate']],
+  ['advanced pathway', ['learn', 'advanced']],
+  ['skills', ['skills']],
+  ['grammar skill', ['skills', 'grammar']],
+  ['listening skill', ['skills', 'listening']],
   ['session runner', ['session', 'w1s1']],
   ['session runner 2', ['session', 'w6s2']],
   ['review setup', ['review']],
@@ -208,6 +218,11 @@ const firstDialogue = S.core.data.dialogues[0];
 check('dialogue detail', () => S.views.dialogue.render(['dialogue', firstDialogue.id]));
 const firstGrammar = S.core.data.grammar[0];
 check('grammar detail', () => S.views.grammar.render(['reference', 'grammar', firstGrammar.id]));
+S.study.data.lessons.forEach((lesson) => {
+  ['read', 'words', 'write', 'drills', 'listen', 'speak'].forEach((step) => {
+    check('extended lesson ' + lesson.id + '/' + step, () => S.views.study.render(['study', lesson.id, step]));
+  });
+});
 
 /* ---------------- the speech layer itself ---------------- */
 function speakChecks() {
@@ -357,12 +372,12 @@ attempt('settings flow', () => {
   const aboutHtml = S.views.settings.render().split('<h2>About</h2>')[1] || '';
   const aboutText = aboutHtml.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
   const aboutWanted = 'Salama! — part of the Vahiny Mianatra Malagasy project. '
-    + '12 weeks, 36 sessions, 2478 dictionary entries, 717 phrases and 33 dialogues. Version 3.1. '
-    + 'Salama! is an independent learning product. Its lessons, structure and design are original.';
+    + 'Learn Official Malagasy through a 12-week course, ' + S.core.data.vocabulary.length + ' dictionary entries and 61 skill lessons. Version 4.6.6. '
+    + 'Build confidence with beginner and intermediate lessons, advanced grammar, and everyday reading, writing, listening and speaking practice.';
   if (aboutText !== aboutWanted) {
     problems.push('settings: About text is not the copy on file\n  got:  ' + aboutText + '\n  want: ' + aboutWanted);
   }
-  if (/Abidi|VOICE_MAP|reference material|Tenim-pirenena/.test(aboutHtml)) {
+  if (/Abidi|VOICE_MAP|reference material|Tenim-pirenena|\bBako\b|adapted|inspired/.test(aboutHtml)) {
     problems.push('settings: About still carries the old attribution copy');
   }
 });

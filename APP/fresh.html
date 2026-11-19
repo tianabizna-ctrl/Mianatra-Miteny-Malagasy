@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Salama! — Learn Malagasy</title>
-<meta name="description" content="A self-paced Malagasy course for beginners: 12 weeks, 36 sessions, 2,478 words, with audio.">
+<meta name="description" content="Learn Official Malagasy with Salama!: a 12-week course and 61 skill lessons, from beginner conversations to intermediate practice and advanced grammar.">
 <meta name="theme-color" content="#123F2B">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="media/icon.svg" type="image/svg+xml">
@@ -14,13 +14,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,600&family=Public+Sans:wght@400;500;600;700;800&family=Gloock&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Young+Serif&family=Work+Sans:wght@400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=4.6.1">
+<link rel="stylesheet" href="styles.css?v=4.6.6">
+<link rel="stylesheet" href="study.css?v=4.6.6">
 <script>
 (function () {
   if (window.caches && caches.keys) {
     caches.keys().then(function (keys) {
       keys.forEach(function (k) {
-        if (k !== 'salama-v4.6.1') caches.delete(k);
+        if (k !== 'salama-v4.6.6') caches.delete(k);
       });
     });
   }
@@ -70,7 +71,8 @@
     <nav class="appnav" aria-label="Sections">
       <div class="appnav-inner">
         <a href="#/today" data-nav="today"><span>Today</span></a>
-        <a href="#/course" data-nav="course"><span>Course</span></a>
+         <a href="#/course" data-nav="course"><span>Course</span></a>
+         <a href="#/skills" data-nav="skills"><span>Skills</span></a>
         <a href="#/dictionary" data-nav="dictionary"><span>Dictionary</span></a>
         <a href="#/reference/phrases" data-nav="reference"><span>Reference</span></a>
         <a href="#/review" data-nav="review"><span>Practice</span></a>
@@ -113,26 +115,30 @@
       <span class="brand-badge brand-badge-sm" aria-hidden="true">S</span>
       <strong>Salama!</strong>
     </div>
-    <p><strong>Salama!</strong> — part of the Vahiny Mianatra Malagasy project. Lessons and curriculum are original.</p>
+    <p><strong>Salama!</strong> — your Official Malagasy learning companion.</p>
     <a class="footer-top-link" href="#/today">Back to Today &uarr;</a>
   </div>
 </footer>
 
-<script src="data/content.js?v=4.6.1"></script>
-<script src="js/core.js?v=4.6.1"></script>
-<script src="js/speech.js?v=4.6.1"></script>
-<script src="js/ui.js?v=4.6.1"></script>
-<script src="js/views/today.js?v=4.6.1"></script>
-<script src="js/views/course.js?v=4.6.1"></script>
-<script src="js/views/session.js?v=4.6.1"></script>
-<script src="js/views/review.js?v=4.6.1"></script>
-<script src="js/views/quiz.js?v=4.6.1"></script>
-<script src="js/views/words.js?v=4.6.1"></script>
-<script src="js/views/library.js?v=4.6.1"></script>
-<script src="js/views/edit.js?v=4.6.1"></script>
-<script src="js/views/progress.js?v=4.6.1"></script>
-<script src="js/views/settings.js?v=4.6.1"></script>
-<script src="js/views/record.js?v=4.6.1"></script>
-<script src="app.js?v=4.6.1"></script>
+<script src="data/content.js?v=4.6.6"></script>
+<script src="data/study.js?v=4.6.6"></script>
+<script src="js/core.js?v=4.6.6"></script>
+<script src="js/speech.js?v=4.6.6"></script>
+<script src="js/ui.js?v=4.6.6"></script>
+<script src="js/study-core.js?v=4.6.6"></script>
+<script src="js/views/study-hub.js?v=4.6.6"></script>
+<script src="js/views/study-lesson.js?v=4.6.6"></script>
+<script src="js/views/today.js?v=4.6.6"></script>
+<script src="js/views/course.js?v=4.6.6"></script>
+<script src="js/views/session.js?v=4.6.6"></script>
+<script src="js/views/review.js?v=4.6.6"></script>
+<script src="js/views/quiz.js?v=4.6.6"></script>
+<script src="js/views/words.js?v=4.6.6"></script>
+<script src="js/views/library.js?v=4.6.6"></script>
+<script src="js/views/edit.js?v=4.6.6"></script>
+<script src="js/views/progress.js?v=4.6.6"></script>
+<script src="js/views/settings.js?v=4.6.6"></script>
+<script src="js/views/record.js?v=4.6.6"></script>
+<script src="app.js?v=4.6.6"></script>
 </body>
 </html>

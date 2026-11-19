@@ -1,0 +1,372 @@
+{
+  "documentCount": 61,
+  "pageCount": 206,
+  "documents": [
+    {
+      "id": "grammar10indirectobject",
+      "file": "Grammar Lessons/grammar10indirectobject.pdf",
+      "sha256": "e401689b4c4e96828436182c86020de0b825fb8f41bfb5441353bfc5ef6f0539",
+      "pageCount": 3
+    },
+    {
+      "id": "grammar11aconjunctions",
+      "file": "Grammar Lessons/grammar11aconjunctions.pdf",
+      "sha256": "4713ea3ae8babee57c0cd527a50c780ec242493902f8446c13129a49b81f4224",
+      "pageCount": 3
+    },
+    {
+      "id": "grammar11bconjunctions2",
+      "file": "Grammar Lessons/grammar11bconjunctions2.pdf",
+      "sha256": "c9b9799f4588c03020c35c45512c5b6d7a1099975a38749fcbd464308e527c0a",
+      "pageCount": 4
+    },
+    {
+      "id": "grammar12indirectpersonalpronouns",
+      "file": "Grammar Lessons/grammar12indirectpersonalpronouns.pdf",
+      "sha256": "a7d27177c934a31699d2026e4a09998b27bfa3e09ea43bf6e723889ecc144858",
+      "pageCount": 4
+    },
+    {
+      "id": "grammar13apossessiveadjectives",
+      "file": "Grammar Lessons/grammar13apossessiveadjectives.pdf",
+      "sha256": "b33efef0b3e8aad76f5b2d012015eca1cf0e11bee2df42fd695fd3579606f3ac",
+      "pageCount": 4
+    },
+    {
+      "id": "grammar13bpossessiveadjectivesquestions",
+      "file": "Grammar Lessons/grammar13bpossessiveadjectivesquestions.pdf",
+      "sha256": "f98d2a4e2fc855505bdcbd0a2d8f03ef77c9ad4178514893f9fb222f66f8b482",
+      "pageCount": 2
+    },
+    {
+      "id": "grammar13dpossessivepronouns",
+      "file": "Grammar Lessons/grammar13dpossessivepronouns.pdf",
+      "sha256": "ecd0723f611cafc2460ee50acaa57b6f3247aeb45dd2b162f89ee0af573f7097",
+      "pageCount": 5
+    },
+    {
+      "id": "grammar14aadverbialphraseofplace",
+      "file": "Grammar Lessons/grammar14aadverbialphraseofplace.pdf",
+      "sha256": "de6a0a82fbc3b94e68e96cc03438ee56dc3e2297082b261908f2a26901234161",
+      "pageCount": 6
+    },
+    {
+      "id": "grammar14badverbialphraseofplace2",
+      "file": "Grammar Lessons/grammar14badverbialphraseofplace2.pdf",
+      "sha256": "b4c1c290df6423ff86329dfc647b0afb75973afc3dc1a40531628c723e9cffb8",
+      "pageCount": 5
+    },
+    {
+      "id": "grammar14dadverbialphraseofplace2",
+      "file": "Grammar Lessons/grammar14dadverbialphraseofplace2.pdf",
+      "sha256": "9eef9d04d0cd1633df5631ed1ca73dbb5d17bc34821f7a226f6fbe55c013d93f",
+      "pageCount": 7
+    },
+    {
+      "id": "grammar15aadverbialphraseoftime",
+      "file": "Grammar Lessons/grammar15aadverbialphraseoftime.pdf",
+      "sha256": "9a7427d34212714575b1576affa1b50e05e5c026fd4a3dc100012d363ce96b33",
+      "pageCount": 5
+    },
+    {
+      "id": "grammar15badverbialphraseoftime2",
+      "file": "Grammar Lessons/grammar15badverbialphraseoftime2.pdf",
+      "sha256": "09fdf82945e230ab3e6151b233d9f2fa0b74dde8a5ecb1350d9293c8817c46a6",
+      "pageCount": 5
+    },
+    {
+      "id": "grammar15dadverbialphraseoftime3",
+      "file": "Grammar Lessons/grammar15dadverbialphraseoftime3.pdf",
+      "sha256": "d9c950a3bc39ed5ab54fb33da4b85fe6de10c8512a79a77c7956203b97897193",
+      "pageCount": 6
+    },
+    {
+      "id": "grammar16apassivevoice",
+      "file": "Grammar Lessons/grammar16apassivevoice.pdf",
+      "sha256": "b6a71237ded9f7338830bc4689c2059048e69f797990a48fb06531e2e5f7bf27",
+      "pageCount": 3
+    },
+    {
+      "id": "grammar16bpassivevoice2",
+      "file": "Grammar Lessons/grammar16bpassivevoice2.pdf",
+      "sha256": "a11728c23693f0426f806d870b6a5f68760283aa247a895740993f24ba528eb6",
+      "pageCount": 3
+    },
+    {
+      "id": "grammar16dpassivevoice3",
+      "file": "Grammar Lessons/grammar16dpassivevoice3.pdf",
+      "sha256": "a63906e329e746f8316a6df1ba1e388cb55ec7fbe892b9648802d48513ec5edf",
+      "pageCount": 4
+    },
+    {
+      "id": "grammar1formingsentences",
+      "file": "Grammar Lessons/grammar1formingsentences.pdf",
+      "sha256": "8cb8d3f0de41a4d1480346803a0ef7c53953533dbf9208c9ddb6f8b1b0045070",
+      "pageCount": 2
+    },
+    {
+      "id": "grammar2phraseswithverbs",
+      "file": "Grammar Lessons/grammar2phraseswithverbs.pdf",
+      "sha256": "095f43e9aedbd3d293d773dad2855151be440b21993d800d9bfd7214d09e7aca",
+      "pageCount": 3
+    },
+    {
+      "id": "grammar3intransitiveverbs",
+      "file": "Grammar Lessons/grammar3intransitiveverbs.pdf",
+      "sha256": "442b390a9a4c04a718defe81dd9e32614b96a8a71f09c030a2e6aacf2eec72d2",
+      "pageCount": 3
+    },
+    {
+      "id": "grammar4atransitiveverbs",
+      "file": "Grammar Lessons/grammar4atransitiveverbs.pdf",
+      "sha256": "aad84247b6f2799879c191c0e5295808c56def0d264a8b89d32f8fdcce8aef84",
+      "pageCount": 4
+    },
+    {
+      "id": "grammar4btransitiveverbs2",
+      "file": "Grammar Lessons/grammar4btransitiveverbs2.pdf",
+      "sha256": "50b644f2efe30fd5b05279b1d8b4ea6c526925f09f0fd3c7c84be7f698a99d47",
+      "pageCount": 3
+    },
+    {
+      "id": "grammar5adverbsandcommonauxiliaryverbs",
+      "file": "Grammar Lessons/grammar5adverbsandcommonauxiliaryverbs.pdf",
+      "sha256": "b3a1a2c3153f3104f3c5d40e0c21b4e03f522f32865f1a5307ff99607a9365ee",
+      "pageCount": 3
+    },
+    {
+      "id": "grammar6aamin-ny",
+      "file": "Grammar Lessons/grammar6aamin'ny.pdf",
+      "sha256": "2757597626f73a4830cb50c593e5e034a18e8395b2b390ed11ead7900a71ac60",
+      "pageCount": 2
+    },
+    {
+      "id": "grammar6bamin-ny",
+      "file": "Grammar Lessons/grammar6bamin'ny.pdf",
+      "sha256": "265a8731b6fa274c49467785fa23d0efd69a88bc2dc4181c6ee666c839cdfd31",
+      "pageCount": 2
+    },
+    {
+      "id": "grammar7opposites",
+      "file": "Grammar Lessons/grammar7opposites.pdf",
+      "sha256": "972f81d0c9499b57def9dfbe0e30b958e6e4637853b8596d8056dc1ebd5cc068",
+      "pageCount": 4
+    },
+    {
+      "id": "grammar8demonstrativewords",
+      "file": "Grammar Lessons/grammar8demonstrativewords.pdf",
+      "sha256": "1a4d0b3652ba32afa9bdef701911305c7adcbd090de6d955df770781cced117b",
+      "pageCount": 3
+    },
+    {
+      "id": "grammar9acomparisons",
+      "file": "Grammar Lessons/grammar9acomparisons.pdf",
+      "sha256": "435270c9ed71940d85b7168b98a74dc5565370f8b752fbd461807b1079f6ba66",
+      "pageCount": 2
+    },
+    {
+      "id": "grammar9bcomparisons2",
+      "file": "Grammar Lessons/grammar9bcomparisons2.pdf",
+      "sha256": "716777dcacf16377fb1411b6a3d32ec887594b2b2966b171471f0f941b9504b9",
+      "pageCount": 2
+    },
+    {
+      "id": "grammar9dcomparisons3",
+      "file": "Grammar Lessons/grammar9dcomparisons3.pdf",
+      "sha256": "d59da4caefa0466436ce43785dea6db7621a6534a03742dbfbf4122f19f98222",
+      "pageCount": 3
+    },
+    {
+      "id": "introlesson1agreetings",
+      "file": "Introductory Lessons/introlesson1agreetings.pdf",
+      "sha256": "ae16081cbbf62a8552c55f7b536094f6128911459ea554001a1472962b91d9c5",
+      "pageCount": 2
+    },
+    {
+      "id": "introlesson1bgoodbye",
+      "file": "Introductory Lessons/introlesson1bgoodbye.pdf",
+      "sha256": "56b4520abdeae499cf9745fc982b28f9c672f09d73df23fb462845ee58df8286",
+      "pageCount": 2
+    },
+    {
+      "id": "introlesson2usefulexpressions",
+      "file": "Introductory Lessons/introlesson2usefulexpressions.pdf",
+      "sha256": "a3bfd6b3351d416afd0cae446178386dfd8469aba7ed4a69fcad1dd29c79b6da",
+      "pageCount": 2
+    },
+    {
+      "id": "introlesson3introducingyourself",
+      "file": "Introductory Lessons/introlesson3introducingyourself.pdf",
+      "sha256": "b6e1d759d974a86614c101f4bb99c427e46fed2fd4da834d327f1d8cb7e8edee",
+      "pageCount": 2
+    },
+    {
+      "id": "introlesson4goingtothemarket",
+      "file": "Introductory Lessons/introlesson4goingtothemarket.pdf",
+      "sha256": "e008363cfeb60527c12db432c8aa00027813b1eef9499e5e2638e2b032a938bc",
+      "pageCount": 3
+    },
+    {
+      "id": "introlesson5goingtochurch",
+      "file": "Introductory Lessons/introlesson5goingtochurch.pdf",
+      "sha256": "367858e0fb1238d956aed34bc9a44cc4aae0380f3eaedf02762664c84f6738e5",
+      "pageCount": 2
+    },
+    {
+      "id": "introlesson6visitingavillage",
+      "file": "Introductory Lessons/introlesson6visitingavillage.pdf",
+      "sha256": "65ca86c39b0f710db82cd55ea7b22d1eb6f1722dd1e9d7941fad4326be7af05d",
+      "pageCount": 2
+    },
+    {
+      "id": "introlessons1-4reviewexercises",
+      "file": "Introductory Lessons/introlessons1-4reviewexercises.pdf",
+      "sha256": "793de4143bac41c6c9c5b95da9430139cffd3a215b41aa007a04688ae5ca3214",
+      "pageCount": 4
+    },
+    {
+      "id": "theme-2-the-house",
+      "file": "Thematic Lessons/theme 2 the house.pdf",
+      "sha256": "89aea4f2883c4d4c67dc10553693825bfc2a90e936eaa026ca81ef660628e03f",
+      "pageCount": 3
+    },
+    {
+      "id": "theme-3-weather-and-climate",
+      "file": "Thematic Lessons/theme 3 weather and climate.pdf",
+      "sha256": "0d23571e92f11ba790a123bdd521f2b1527074523828592b20457aa6325966b7",
+      "pageCount": 2
+    },
+    {
+      "id": "theme10tellingthetime",
+      "file": "Thematic Lessons/theme10tellingthetime.pdf",
+      "sha256": "554d125ee40e600849beacd9b8f393db7590d884cc7bbaa5061e9ecbcdb20b2e",
+      "pageCount": 4
+    },
+    {
+      "id": "theme11adirections",
+      "file": "Thematic Lessons/theme11adirections.pdf",
+      "sha256": "bfcfe73c2f67f9b74acd6632560ec4c6827851bfb54af96df62c3bf79ed48baa",
+      "pageCount": 5
+    },
+    {
+      "id": "theme11bdirections2",
+      "file": "Thematic Lessons/theme11bdirections2.pdf",
+      "sha256": "4b518df1342b72f854813b6eaf4c94dd79a4c3504268e0e83d63cc9ca8778cb3",
+      "pageCount": 4
+    },
+    {
+      "id": "theme11ddirections3",
+      "file": "Thematic Lessons/theme11ddirections3.pdf",
+      "sha256": "e4b3785b5feb0cb15ced70a313e67b8cded9f0b732a07bb2de643687e873551c",
+      "pageCount": 4
+    },
+    {
+      "id": "theme12aatschool",
+      "file": "Thematic Lessons/theme12aatschool.pdf",
+      "sha256": "310ba2dd7fce7dd20cfb055ae2140c792770675d118db4dfd0f0bdfbfdc44d3f",
+      "pageCount": 4
+    },
+    {
+      "id": "theme12batschool2",
+      "file": "Thematic Lessons/theme12batschool2.pdf",
+      "sha256": "d0e6232cbfb0eeb9b9f13543afcfcf045ca88596ba2b72fef8b19fcba60d2a51",
+      "pageCount": 4
+    },
+    {
+      "id": "theme13chores",
+      "file": "Thematic Lessons/theme13chores.pdf",
+      "sha256": "ee9c7f2ae3eefbb512424adca4827a8d9d87645d6e0d2a09d64c0311b222d387",
+      "pageCount": 2
+    },
+    {
+      "id": "theme14athedailyroutine",
+      "file": "Thematic Lessons/theme14athedailyroutine.pdf",
+      "sha256": "9d09d94ab81d67edd0f09260dea65bd19affc53452a8984eb975ba4b294c29ca",
+      "pageCount": 2
+    },
+    {
+      "id": "theme14bthedailyroutine2",
+      "file": "Thematic Lessons/theme14bthedailyroutine2.pdf",
+      "sha256": "b7e873ae99254fdf0dfd56f47729a4cacf9f160fc31ef2b2348995347de41841",
+      "pageCount": 4
+    },
+    {
+      "id": "theme15atransport",
+      "file": "Thematic Lessons/theme15atransport.pdf",
+      "sha256": "ed20da5ebaca9386efafd4bbbf5302331720e0fe044a5e735c3885d41446bcb6",
+      "pageCount": 3
+    },
+    {
+      "id": "theme15btransport2",
+      "file": "Thematic Lessons/theme15btransport2.pdf",
+      "sha256": "6c9ff9ac13bb92fce26ca81ccec41bf97edb9739ec22ded715467ec1147af8f6",
+      "pageCount": 3
+    },
+    {
+      "id": "theme15dtransport3",
+      "file": "Thematic Lessons/theme15dtransport3.pdf",
+      "sha256": "a1e7bb8cc99620109fbdb4b162f7b32c6154e226c94b5efced004df7c8946576",
+      "pageCount": 3
+    },
+    {
+      "id": "theme15etransport4",
+      "file": "Thematic Lessons/theme15etransport4.pdf",
+      "sha256": "673b22ff7e01a1613246992d2bc06ff79d2bfb80e37c82edbdb1bcbf5c51131c",
+      "pageCount": 3
+    },
+    {
+      "id": "theme1family",
+      "file": "Thematic Lessons/theme1family.pdf",
+      "sha256": "96157a8a2f1d51ab64afbc99cdf20de1864acd16f7722d0efc76f513f2701e5c",
+      "pageCount": 4
+    },
+    {
+      "id": "theme4inthekitchen",
+      "file": "Thematic Lessons/theme4inthekitchen.pdf",
+      "sha256": "bf2a90c35a4f4cc7bf3551cac2bc1ad330affb6ac8236d8b51a73e42812aec8a",
+      "pageCount": 2
+    },
+    {
+      "id": "theme5jobs",
+      "file": "Thematic Lessons/theme5jobs.pdf",
+      "sha256": "21d9ff6399c45b05b1c9cd81a0b2d66a50b5eb65082cf8d81841869d99ac6fcc",
+      "pageCount": 4
+    },
+    {
+      "id": "theme6clothingandcolours",
+      "file": "Thematic Lessons/theme6clothingandcolours.pdf",
+      "sha256": "f69a241dc1b9fdc040b79358d5234bdaffecc56d90939d5734f8a27964ae6373",
+      "pageCount": 3
+    },
+    {
+      "id": "theme7apartsofthebody",
+      "file": "Thematic Lessons/theme7apartsofthebody.pdf",
+      "sha256": "71c6a55772d72acf5ac01747a752ed7fd534661203d07fc74af7f4153b159847",
+      "pageCount": 3
+    },
+    {
+      "id": "theme7bpartsofthebodydiseases",
+      "file": "Thematic Lessons/theme7bpartsofthebodydiseases.pdf",
+      "sha256": "cea50a9ccd1c0ce915882fc2996bd70be78c7bb79bcd3f2ea1dbf648679ad295",
+      "pageCount": 4
+    },
+    {
+      "id": "theme8afruitsandvegetables",
+      "file": "Thematic Lessons/theme8afruitsandvegetables.pdf",
+      "sha256": "0332e448b4d2150699f0f8fb8037679b04288c0308ed165e347876daf4f7b364",
+      "pageCount": 4
+    },
+    {
+      "id": "theme8bvegetablesandspices",
+      "file": "Thematic Lessons/theme8bvegetablesandspices.pdf",
+      "sha256": "06d1fa8a73c7f4e0e79c5df58068a3f10aef278218d6de550f954d735d8b246f",
+      "pageCount": 2
+    },
+    {
+      "id": "theme9animals",
+      "file": "Thematic Lessons/theme9animals.pdf",
+      "sha256": "e82013dd63cf77aac760ac33d962902426588783a8fdcd134a7717b3cf098f59",
+      "pageCount": 6
+    }
+  ]
+}

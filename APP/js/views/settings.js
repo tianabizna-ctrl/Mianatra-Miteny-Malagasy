@@ -258,8 +258,8 @@
       '<h2>About</h2>' +
       '<div class="panel">' +
         '<p><strong>Salama!</strong> — part of the Vahiny Mianatra Malagasy project. ' +
-          '12 weeks, 36 sessions, 2478 dictionary entries, 717 phrases and 33 dialogues. Version 3.1.</p>' +
-        '<p>Salama! is an independent learning product. Its lessons, structure and design are original.</p>' +
+          'Learn Official Malagasy through a 12-week course, ' + core.data.vocabulary.length + ' dictionary entries and 61 skill lessons. Version 4.6.6.</p>' +
+        '<p>Build confidence with beginner and intermediate lessons, advanced grammar, and everyday reading, writing, listening and speaking practice.</p>' +
       '</div>' +
       '</div>';
   }

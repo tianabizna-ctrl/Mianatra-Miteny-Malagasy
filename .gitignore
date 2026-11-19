@@ -7,3 +7,7 @@ __pycache__/
 !media/audio_custom/*.wav
 salama-*-complete.zip
 PROOFREAD_AUDIO.html
+
+# Full PDF text and diagram OCR remain local research, not public app assets.
+RESEARCH/BAKO_EXTRACTED.json
+RESEARCH/BAKO_OCR.json

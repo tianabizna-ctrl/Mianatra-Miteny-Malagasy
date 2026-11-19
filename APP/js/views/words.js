@@ -243,6 +243,12 @@
       words.pos = 'all';
       words.letter = 'all';
       words.limit = PAGE;
+    } else if (core.themeById[param]) {
+      words.theme = param;
+      words.q = '';
+      words.pos = 'all';
+      words.letter = 'all';
+      words.limit = PAGE;
     } else if (POS_LABELS[param] || param === 'expr') {
       words.pos = param;
       words.limit = PAGE;

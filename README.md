@@ -1,11 +1,13 @@
 # Salama! — Learn Malagasy
 
-An offline-first, installable web app that teaches Malagasy to an absolute beginner.
-12 weeks, 36 sessions, 2,478 dictionary entries, 717 phrases, 33 dialogues, 27 grammar
-topics and 161 culture notes. Static files only: no build step, no dependencies at
-runtime, no server logic.
+An offline-first, installable web app for learning **Official Malagasy**.
+The 12-week, 36-session beginner course has 2,198 dictionary entries,
+712 phrases and 27 grammar topics. It also includes **61 skill lessons**:
+26 beginner extensions, 27 intermediate lessons and 8 advanced-grammar lessons,
+with a bilingual Skills menu and saved reading, writing and drill progress.
+Static files only: no build step, no dependencies at runtime, no server logic.
 
-<sub>Version 3.4 · November 2026 · part of the Vahiny Mianatra Malagasy project</sub>
+<sub>UI version 4.6.6 · November 2026 · part of the Vahiny Mianatra Malagasy project</sub>
 
 ## Run it
 
@@ -17,6 +19,11 @@ python3 -m http.server 8788
 
 Opening `APP/index.html` directly also works; only the offline cache needs `http(s)`.
 Install it from the browser menu to get an app icon and offline use.
+
+Open **Course → Explore learning levels**, or **Skills**. Learn Official Malagasy
+through real-life situations, practical vocabulary and guided exercises.
+See [the integration guide](RESEARCH/COURSE_INTEGRATION.md) for the curriculum map,
+content maintenance, audio capabilities and validation.
 
 ## Reviewed by a native speaker
 
@@ -56,15 +63,22 @@ MALAGASY ASSETS/        source dictionaries and course material (unchanged)
 extracted/              text extracted from those sources (unchanged)
 ```
 
-## The checks (all green)
+## Validation
 
 ```bash
-python3 RESEARCH/build_app_data.py       # rebuild APP/data/content.js + README counts
+python3 RESEARCH/build_study_data.py     # rebuild the skill course; preserves existing customisations
+python3 RESEARCH/test_study_content.py   # coverage, level assignments and Official-only vocabulary
+node RESEARCH/test_study.js             # lesson progress, drafts, drills, import and reset
 python3 RESEARCH/validate_content.py     # content and pronunciation gates
 python3 RESEARCH/test_pronunciation.py   # 28 unit tests on the pronunciation rules
 python3 RESEARCH/check_parity.py         # Python and JavaScript adapters must agree
 node RESEARCH/smoke_app.js               # every screen renders, every handler runs
 ```
+
+Do not blindly run the older base-data generator: it does not yet reproduce all
+current session/voice customisations. The base content validator and three
+pronunciation assertions have known pre-existing failures; details are in the
+integration guide. The new course checks are separate.
 
 ## Audio, honestly
 
@@ -87,9 +101,10 @@ Licences: session audio is public domain (Peace Corps); rendered word and line a
 CC BY-NC 4.0 (Meta MMS) — free for personal, non-commercial use with attribution;
 traveler phrases and the guide are CC BY-SA 3.0 (Wikivoyage). Details in `APP/README.md`.
 
-## Credits
+## Licensing and technical references
 
-Lessons, curriculum, app and audio pipeline are original work. Sources are used as
-compiled reference material: Peace Corps Malagasy Language Lessons (public domain),
+Reference material includes Peace Corps Malagasy Language Lessons (public domain),
 Rasoloson's Malagasy–English dictionary (for stress marks), Wikivoyage's Malagasy
-phrasebook (CC BY-SA 3.0), Bako's Mandritsara lesson notes (linked, not republished).
+phrasebook (CC BY-SA 3.0). Course publication permission is recorded in the
+integration guide. Original course PDFs, embedded recordings and full extracted
+text are not bundled into the public app.

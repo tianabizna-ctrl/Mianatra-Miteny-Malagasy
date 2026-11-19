@@ -17,6 +17,7 @@ window.Salama = window.Salama || {};
       cards: {},          // wordId -> { box, seen, lastGrade }
       sessions: {},       // sessionId -> timestamp completed
       quizzes: [],        // [{ date, theme, score, total }]
+      study: { completed: {}, drafts: {}, checks: {} }, // additive course, not beginner sessions
       streak: { last: null, days: 0, visits: 0 },
       prefs: {
         textsize: 0,
@@ -69,12 +70,33 @@ window.Salama = window.Salama || {};
   state.cards = state.cards || {};
   state.sessions = state.sessions || {};
   state.quizzes = state.quizzes || [];
+  state.study = cleanStudy(state.study);
   state.streak = state.streak || { last: null, days: 0, visits: 0 };
   state.prefs = Object.assign(blank().prefs, state.prefs || {});
 
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(state)); }
     catch (e) { /* private mode: the session still works, it just won't persist */ }
+  }
+
+  // Only restore known lesson IDs and bounded learner data from a backup.
+  function cleanStudy(incoming) {
+    var fresh = { completed: {}, drafts: {}, checks: {} };
+    if (!incoming || typeof incoming !== 'object' || !window.STUDY_CONTENT) return fresh;
+    window.STUDY_CONTENT.lessons.forEach(function (lesson) {
+      var id = lesson.id;
+      var completed = incoming.completed && incoming.completed[id];
+      if (typeof completed === 'number' && isFinite(completed) && completed > 0) fresh.completed[id] = completed;
+      var draft = incoming.drafts && incoming.drafts[id];
+      if (typeof draft === 'string') fresh.drafts[id] = draft.slice(0, 8000);
+      var check = incoming.checks && incoming.checks[id];
+      if (check && Number.isInteger(check.correct) && check.correct >= 0 &&
+          check.total === lesson.drills.length && check.correct <= check.total &&
+          typeof check.at === 'number' && isFinite(check.at) && check.at > 0) {
+        fresh.checks[id] = { correct: check.correct, total: check.total, at: check.at };
+      }
+    });
+    return fresh;
   }
 
   /* ---------------- dates ---------------- */
@@ -781,6 +803,7 @@ window.Salama = window.Salama || {};
     fresh.cards = incoming.cards || {};
     fresh.sessions = incoming.sessions || {};
     fresh.quizzes = Array.isArray(incoming.quizzes) ? incoming.quizzes.slice(-40) : [];
+    fresh.study = cleanStudy(incoming.study);
     fresh.streak = incoming.streak || fresh.streak;
     fresh.prefs = Object.assign(fresh.prefs, incoming.prefs || {});
     Object.keys(state).forEach(function (k) { delete state[k]; });

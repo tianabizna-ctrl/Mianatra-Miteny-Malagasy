@@ -62,6 +62,14 @@
 
       '<h2>Course</h2>' + weekRows() +
 
+      (S.study ? '<h2>Extended learning pathways</h2><p class="meta">' + S.study.count() + ' of ' + S.study.data.lessons.length +
+        ' lessons marked studied. Self-reported completion is separate from drill results and beginner sessions.</p><div class="study-progress-list">' +
+        S.study.data.levels.map(function (level) {
+          var total = S.study.data.lessons.filter(function (l) { return l.level === level.id; }).length;
+          return '<a href="#/learn/' + level.id + '"><strong>' + ui.esc(level.title) + '</strong><span>' +
+            S.study.count(level.id) + ' of ' + total + ' studied</span></a>';
+        }).join('') + '</div><h3>Recent lesson drills</h3>' + studyChecks() : '') +
+
       '<h2>Quizzes</h2>' + quizRows() +
 
       '<div class="btn-row" style="margin-top:24px">' +
@@ -73,6 +81,17 @@
   }
 
   function mount() { /* read-only screen */ }
+
+  function studyChecks() {
+    var checks = core.state.study.checks;
+    var ids = Object.keys(checks).sort(function (a, b) { return checks[b].at - checks[a].at; }).slice(0, 8);
+    if (!ids.length) return '<p class="meta">No extended-lesson drills checked yet.</p>';
+    return '<div class="study-progress-list">' + ids.map(function (id) {
+      var lesson = S.study.lesson(id);
+      return '<a href="#/study/' + id + '/drills"><span>' + ui.esc(lesson.title) + '</span><span>' +
+        checks[id].correct + '/' + checks[id].total + ' sample matches</span></a>';
+    }).join('') + '</div>';
+  }
 
   S.views = S.views || {};
   S.views.progress = { render: render, mount: mount, nav: 'progress' };

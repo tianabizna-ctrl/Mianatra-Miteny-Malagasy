@@ -53,6 +53,12 @@
           (canEdit ? '<a class="course-session-edit-link" href="#/edit/session/' + ui.esc(session.id) + '" title="Manual edits (Malagasy &amp; phonetics) for Week ' + session.week + ' \u00b7 Session ' + session.number + '">\u270E Manual edits (W' + session.week + '\u00b7S' + session.number + ')</a>' : '') +
         '</div>';
       }).join('') +
+      (S.study ? '<div class="study-related"><h3>Extra practice for this week</h3><div class="btn-row">' +
+        S.study.data.lessons.filter(function (lesson) {
+          return lesson.relatedWeeks.indexOf(week.week) !== -1;
+        }).slice(0, 5).map(function (lesson) {
+          return '<a class="btn btn-quiet btn-sm" href="#/study/' + lesson.id + '/read">' + ui.esc(lesson.title) + '</a>';
+        }).join('') + '</div><a href="#/learn">See all learning pathways →</a></div>' : '') +
       '</section>';
   }
 
@@ -81,6 +87,9 @@
       '<h1>Course</h1>' +
       '<p class="lead">Twelve weeks, three sessions a week, from first greetings to a full conversation.</p>' +
       resume +
+      '<section class="study-course-entry"><p class="section-eyebrow">Keep growing · Official Malagasy</p>' +
+      '<h2>More situations. More ways to practise.</h2><p>26 beginner lessons, 27 intermediate lessons and 8 advanced-grammar lessons. Explore by level or by skill without losing your place in the 12-week course.</p>' +
+      '<div class="btn-row"><a class="btn" href="#/learn">Explore learning levels →</a><a class="btn btn-secondary" href="#/skills">Choose a skill</a></div></section>' +
       (week ? weekDetail(week) : '') +
       '<h2>' + (week ? 'All weeks' : 'Weeks') + '</h2>' +
       weekList(week ? week.week : 0) +
