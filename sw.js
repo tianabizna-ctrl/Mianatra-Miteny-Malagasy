@@ -1,14 +1,20 @@
 /* Salama! offline cache. Network-first for all assets so fresh audio and phonetics always win when online. */
-const CACHE = 'salama-v4.6.4';
+const CACHE = 'salama-v4.6.6';
 const ASSETS = [
   './',
   './index.html',
+  './fresh.html',
   './styles.css',
+  './study.css',
   './app.js',
   './data/content.js',
+  './data/study.js',
   './js/core.js',
   './js/speech.js',
   './js/ui.js',
+  './js/study-core.js',
+  './js/views/study-hub.js',
+  './js/views/study-lesson.js',
   './js/views/today.js',
   './js/views/course.js',
   './js/views/session.js',
@@ -61,6 +67,10 @@ self.addEventListener('fetch', event => {
         caches.open(CACHE).then(c => c.put(req, copy));
       }
       return res;
-    }).catch(() => caches.match(req).then(cached => cached || caches.match('./index.html')))
+    }).catch(() => caches.match(req, { ignoreSearch: true }).then(cached => {
+      if (cached) return cached;
+      if (req.mode === 'navigate') return caches.match('./index.html');
+      return new Response('This asset is not available offline yet.', { status: 503 });
+    }))
   );
 });
