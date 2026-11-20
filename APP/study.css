@@ -308,3 +308,33 @@ html[data-mode="dark"] .study-level-progress, html[data-mode="dark"] .study-acti
 @media (prefers-reduced-motion: reduce) {
   .study-level-progress > span, .study-activity-track > span { transition: none; }
 }
+
+/* Mobile learning: keep the lesson heading compact and put the activity in view sooner. */
+@media (max-width: 760px) {
+  .study-layout { gap: 8px; }
+  .study-sidebar { padding: 9px 10px; margin: 0 0 8px; }
+  .study-sidebar-label { padding: 0 8px; margin: 0 0 5px; font-size: .66rem; }
+  .study-sidebar nav { display: flex; gap: 5px; overflow-x: auto; padding: 0 2px 4px; scrollbar-width: thin; }
+  .study-sidebar nav a { flex: 0 0 auto; min-height: 40px; padding: 7px 10px; gap: 6px; }
+  .study-sidebar strong { font-size: .78rem; }
+  .study-sidebar small { display: none; }
+  .study-skill-icon { width: 19px; font-size: 1rem; }
+  .study-sidebar-all { display: inline-block; padding: 5px 8px 0; margin-top: 4px; font-size: .76rem; }
+  .study-hero { padding: 18px; margin-bottom: 14px; }
+  .study-hero h1 { font-size: clamp(1.8rem, 7vw, 2.25rem); line-height: 1.04; margin: 0 0 8px; }
+  .study-hero .lead { font-size: .9rem; line-height: 1.4; margin: 0 0 12px; }
+  .study-hero-meta { gap: 6px; }
+  .study-hero-meta span { padding: 5px 9px; font-size: .72rem; }
+  .study-quick-start { padding: 17px; margin-bottom: 18px; }
+  .study-quick-copy h2 { font-size: 1.3rem; }
+  .study-quick-stats { padding: 13px; }
+  .study-lesson-header { margin: 6px 0 10px; padding: 6px 0; }
+  .study-lesson-header h1 { font-size: clamp(1.65rem, 7vw, 2.15rem); line-height: 1.06; margin-bottom: 6px; }
+  .study-steps { margin-bottom: 18px; }
+  .study-panel { padding: 18px; margin-bottom: 14px; }
+}
+@media (max-width: 420px) {
+  .study-sidebar { border-radius: 14px; }
+  .study-activity-nav { margin: 8px 0 18px; }
+  .study-activity-progress { padding: 10px 12px; }
+}

@@ -117,7 +117,7 @@ class StudyContentTests(unittest.TestCase):
             self.assertIn("your Official Malagasy learning companion", html)
             self.assertLess(html.index('src="data/study.js'), html.index('src="js/core.js'))
             self.assertLess(html.index('src="js/views/study-lesson.js'), html.index('src="app.js'))
-            self.assertIn("salama-v4.6.7", html)
+            self.assertIn("salama-v4.6.8", html)
 
 
 if __name__ == "__main__":
