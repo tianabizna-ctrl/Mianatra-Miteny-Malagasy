@@ -89,17 +89,31 @@
   function render(parts) {
     var lesson = study.lesson(parts[1]);
     if (!lesson) return '<div class="view-narrow"><h1>Lesson not found</h1><p class="lead">Choose a lesson from the learning pathways.</p><a class="btn" href="#/learn">All levels</a></div>';
-    var step = STEPS.filter(function (s) { return s.id === parts[2]; })[0] || STEPS[0];
+    var availableSteps = STEPS.filter(function (s) { return s.id !== 'listen' || lesson.listeningWords.length; });
+    var step = availableSteps.filter(function (s) { return s.id === parts[2]; })[0] || availableSteps[0];
+    var stepIndex = Math.max(0, availableSteps.indexOf(step));
     var next = study.next(lesson.id);
+    var previousStep = stepIndex > 0 ? availableSteps[stepIndex - 1] : null;
+    var nextStep = stepIndex < availableSteps.length - 1 ? availableSteps[stepIndex + 1] : null;
     var panels = { read: read, words: words, write: write, drills: drills, listen: listen, speak: speak };
     var sideSkill = step.id === 'read' && lesson.topic === 'grammar' ? 'grammar' : step.skill;
+    var pct = Math.round((stepIndex + 1) * 100 / availableSteps.length);
     return '<div class="study-layout">' + S.studyUi.sidebar(sideSkill) + '<article class="study-content">' +
       '<a class="study-back" href="#/learn/' + lesson.level + '">← ' + ui.esc(lesson.level) + ' pathway</a>' +
-      '<header class="study-lesson-header"><p class="section-eyebrow">Official Malagasy · ' + lesson.minutes + ' minute lesson</p><h1>' + ui.esc(lesson.title) + '</h1>' +
-      '<p class="meta"><span id="studyDoneLabel">' + (study.isDone(lesson.id) ? '✓ Studied' : 'Not marked studied') + '</span></p></header>' +
-      '<nav class="study-steps" aria-label="Lesson activities">' + STEPS.filter(function (s) { return s.id !== 'listen' || lesson.listeningWords.length; }).map(function (s) {
-        return '<a href="#/study/' + lesson.id + '/' + s.id + '"' + (s.id === step.id ? ' aria-current="page"' : '') + '>' + s.title + '</a>';
-      }).join('') + '</nav>' + panels[step.id](lesson) +
+      '<header class="study-lesson-header"><div><p class="section-eyebrow">Official Malagasy · ' + lesson.minutes + ' minute lesson</p><h1>' + ui.esc(lesson.title) + '</h1>' +
+      '<p class="meta"><span id="studyDoneLabel">' + (study.isDone(lesson.id) ? '✓ Studied' : 'Ready when you are') + '</span></p></div>' +
+      '<span class="study-lesson-time">About ' + lesson.minutes + ' min</span></header>' +
+      '<nav class="study-steps" aria-label="Lesson activities">' + availableSteps.map(function (s, index) {
+        return '<a href="#/study/' + lesson.id + '/' + s.id + '"' + (s.id === step.id ? ' aria-current="step"' : '') + '>' +
+          '<span class="study-step-number">' + String(index + 1).padStart(2, '0') + '</span><span>' + s.title + '</span></a>';
+      }).join('') + '</nav>' +
+      '<div class="study-activity-progress"><div class="study-activity-label"><strong>Activity ' + (stepIndex + 1) + ' of ' + availableSteps.length + '</strong><span>' + ui.esc(step.title) + '</span></div>' +
+        '<div class="study-activity-track" role="progressbar" aria-label="Lesson activity position" aria-valuemin="1" aria-valuemax="' + availableSteps.length + '" aria-valuenow="' + (stepIndex + 1) + '"><span style="width:' + pct + '%"></span></div></div>' +
+      panels[step.id](lesson) +
+      '<nav class="study-activity-nav" aria-label="Move between lesson activities">' +
+        (previousStep ? '<a class="btn btn-quiet" href="#/study/' + lesson.id + '/' + previousStep.id + '">← ' + ui.esc(previousStep.title) + '</a>' : '<span></span>') +
+        (nextStep ? '<a class="btn" href="#/study/' + lesson.id + '/' + nextStep.id + '">Next: ' + ui.esc(nextStep.title) + ' →</a>' : '<span class="study-last-step">Last activity</span>') +
+      '</nav>' +
       '<div class="study-finish"><button class="btn" id="studyComplete" type="button" aria-pressed="' + study.isDone(lesson.id) + '">' +
       (study.isDone(lesson.id) ? 'Mark as not studied' : 'Mark lesson studied') + '</button>' +
       (next ? '<a class="btn btn-secondary" href="#/study/' + next.id + '/read">Next lesson →</a>' : '<a class="btn btn-secondary" href="#/learn">Explore another level →</a>') +

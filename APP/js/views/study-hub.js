@@ -14,12 +14,45 @@
       }).join('') + '</nav><a class="study-sidebar-all" href="#/learn">All learning levels →</a></aside>';
   }
 
+  function nextOpenLesson(levelId) {
+    return data.lessons.filter(function (lesson) { return !levelId || lesson.level === levelId; })
+      .filter(function (lesson) { return !study.isDone(lesson.id); })[0] || null;
+  }
+
+  function quickStart() {
+    var next = nextOpenLesson('beginner') || nextOpenLesson();
+    var overall = study.count();
+    var allDone = overall >= data.lessons.length;
+    var featured = next || data.lessons[0];
+    return '<section class="study-quick-start" aria-labelledby="studyStartTitle">' +
+      '<div class="study-quick-copy"><p class="section-eyebrow">A good next step</p>' +
+        '<h2 id="studyStartTitle">Keep your Malagasy moving</h2>' +
+        '<p>' + (featured
+          ? (allDone ? 'You have explored every skill lesson. Revisit <strong>' + ui.esc(featured.title) + '</strong> or choose another area to practise.'
+            : 'Pick up with <strong>' + ui.esc(featured.title) + '</strong> — a short, practical lesson you can finish in about ' + featured.minutes + ' minutes.')
+          : 'Choose a pathway and practise at your own pace.') + '</p>' +
+        '<div class="btn-row"><a class="btn btn-lg" href="' + (featured ? '#/study/' + featured.id + '/read' : '#/learn') + '">' +
+          (allDone ? 'Revisit a lesson' : (featured ? 'Start next lesson' : 'Choose a lesson')) + ' ' + ui.icon('arrow-right') + '</a>' +
+          '<a class="btn btn-secondary" href="#/course">Continue 12-week course</a></div>' +
+      '</div>' +
+      '<div class="study-quick-stats"><div><strong>' + data.lessons.length + '</strong><span>skill lessons</span></div>' +
+        '<div><strong>' + overall + '</strong><span>marked studied</span></div>' +
+        '<p>Begin with a conversation, then explore a skill whenever you want.</p></div>' +
+    '</section>';
+  }
+
   function levelCards() {
     return '<div class="study-levels">' + data.levels.map(function (level, index) {
       var total = data.lessons.filter(function (l) { return l.level === level.id; }).length;
+      var done = study.count(level.id);
+      var percent = total ? Math.round(done * 100 / total) : 0;
+      var next = nextOpenLesson(level.id);
       return '<a class="study-level-card" href="#/learn/' + level.id + '">' +
-        '<span class="study-level-number">0' + (index + 1) + '</span><span class="meta">' + total + ' lessons · ' + study.count(level.id) + ' studied</span>' +
-        '<h2>' + ui.esc(level.title) + '</h2><p>' + ui.esc(level.subtitle) + '</p><span class="study-card-go">Explore level →</span></a>';
+        '<span class="study-level-number">0' + (index + 1) + '</span><span class="study-level-count">' + total + ' lessons · ' + done + ' studied</span>' +
+        '<h2>' + ui.esc(level.title) + '</h2><p>' + ui.esc(level.subtitle) + '</p>' +
+        '<span class="study-level-progress" role="progressbar" aria-label="' + ui.esc(level.title) + ' progress" aria-valuemin="0" aria-valuemax="' + total + '" aria-valuenow="' + done + '"><span style="width:' + percent + '%"></span></span>' +
+        '<span class="study-level-next">' + (next ? 'Next · ' + ui.esc(next.title) : 'Pathway complete') + '</span>' +
+        '<span class="study-card-go">Explore level <span aria-hidden="true">→</span></span></a>';
     }).join('') + '</div>';
   }
 
@@ -52,6 +85,7 @@
       '<header class="study-hero"><p class="section-eyebrow">Official Malagasy · Learn & practise</p><h1>' +
       ui.esc(heading) + '</h1><p class="lead">' + ui.esc(description) + '</p>' +
       '<div class="study-hero-meta"><span>' + data.lessons.length + ' lessons</span><span>3 learning levels</span><span>' + study.count() + ' studied</span></div></header>' +
+      (!level && !skill ? quickStart() : '') +
       (level ? '<div class="study-prerequisite"><strong>Before you begin</strong><p>' + ui.esc(level.prerequisite) + '</p><a href="#/learn">← All levels</a></div>' : (!skill ? levelCards() : '')) +
       '<section aria-labelledby="studyListTitle"><div class="study-list-heading"><h2 id="studyListTitle">' +
       (skill ? 'Practise ' + ui.esc(skill.title.toLowerCase()) : (level ? 'Your learning pathway' : 'Explore the lessons')) + '</h2>' +
@@ -79,7 +113,13 @@
         return (!skill || lesson.skills.indexOf(skill) !== -1) &&
           (!selectedLevel || lesson.level === selectedLevel) &&
           (!type.value || (type.value === 'grammar' ? lesson.topic === 'grammar' : lesson.topic !== 'grammar')) &&
-          (!query || ui.norm([lesson.title, lesson.topic, lesson.notes.join(' '), lesson.vocabulary.map(function (w) { return w.mg + ' ' + w.en; }).join(' ')].join(' ')).indexOf(query) !== -1);
+          (!query || ui.norm([
+            lesson.title, lesson.topic, lesson.task, lesson.notes.join(' '),
+            lesson.examples.map(function (e) { return e.mg + ' ' + e.en; }).join(' '),
+            lesson.reading.join(' '),
+            lesson.drills.map(function (d) { return d.prompt + ' ' + d.answers.join(' '); }).join(' '),
+            lesson.vocabulary.map(function (w) { return w.mg + ' ' + w.en; }).join(' ')
+          ].join(' ')).indexOf(query) !== -1);
       });
       root.querySelector('#studyResults').innerHTML = listMarkup(lessons, skill);
       root.querySelector('#studyCount').textContent = lessons.length + ' ' + ui.plural(lessons.length, 'lesson');
