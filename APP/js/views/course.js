@@ -1,10 +1,82 @@
-/* Course: the 12-week outline, and one week's three sessions. */
+/* Course: the 12-week outline, one week's three sessions, and the two
+   higher tracks (intermediate / advanced) that continue it. */
 (function (S) {
   'use strict';
   var core = S.core;
   var ui = S.ui;
 
-  function weekList(selectedWeek) {
+  var LEVELS = [
+    { id: 'beginner', label: 'Beginner', blurb: 'Twelve weeks, three sessions a week' },
+    { id: 'intermediate', label: 'Intermediate', blurb: 'Everyday situations, longer conversations' },
+    { id: 'advanced', label: 'Advanced', blurb: 'Grammar that changes the focus of a sentence' }
+  ];
+
+  function studyData() {
+    return (S.study && S.study.data) ? S.study.data : null;
+  }
+
+  function studyLessons(levelId) {
+    var data = studyData();
+    if (!data) return [];
+    return data.lessons.filter(function (lesson) { return lesson.level === levelId; })
+      .sort(function (a, b) { return a.order - b.order; });
+  }
+
+  function levelById(id) {
+    return LEVELS.filter(function (l) { return l.id === id; })[0] || LEVELS[0];
+  }
+
+  function hasLevel(id) {
+    return id === 'beginner' || studyLessons(id).length > 0;
+  }
+
+  function themeTitle(id) {
+    var theme = (core.data.themeMap || []).filter(function (t) { return t.id === id; })[0];
+    return theme ? theme.title : 'Malagasy in practice';
+  }
+
+  /* Intermediate and advanced lessons are grouped by theme, then split into
+     weeks of at most three — the same rhythm as the 12-week course. */
+  function studyWeeks(levelId) {
+    var lessons = studyLessons(levelId);
+    var runs = [];
+    lessons.forEach(function (lesson) {
+      var last = runs[runs.length - 1];
+      if (last && last.theme === lesson.theme) last.lessons.push(lesson);
+      else runs.push({ theme: lesson.theme, lessons: [lesson] });
+    });
+    var weeks = [];
+    runs.forEach(function (run) {
+      for (var i = 0; i < run.lessons.length; i += 3) {
+        weeks.push({
+          week: weeks.length + 1,
+          theme: themeTitle(run.theme),
+          lessons: run.lessons.slice(i, i + 3)
+        });
+      }
+    });
+    return weeks;
+  }
+
+  function studyDone(lesson) {
+    return Boolean(S.study && S.study.isDone && S.study.isDone(lesson.id));
+  }
+
+  function doneIn(lessons) {
+    return lessons.filter(studyDone).length;
+  }
+
+  function tabBar(levelId) {
+    return '<div class="tabs course-level-tabs" aria-label="Course level">' +
+      LEVELS.filter(function (level) { return hasLevel(level.id); }).map(function (level) {
+        var href = level.id === 'beginner' ? '#/course' : '#/course/' + level.id;
+        return '<a href="' + href + '"' + (level.id === levelId ? ' aria-current="page"' : '') + '>' +
+          ui.esc(level.label) + '</a>';
+      }).join('') +
+    '</div>';
+  }
+
+  function beginnerWeekList(selectedWeek) {
     return '<div class="week-list">' + core.data.curriculum.map(function (week) {
       var done = core.weekDoneCount(week.week);
       var state = done === week.sessions.length ? 'Complete'
@@ -16,6 +88,26 @@
         '<span class="week-body">' +
           '<span class="week-no">Week ' + week.week + ' \u2022 Month ' + week.month + '</span>' +
           '<span class="week-title">' + ui.esc(week.title) + '</span>' +
+        '</span>' +
+        '<span class="week-state">' + state + '</span>' +
+        ui.icon('chevron-right', 'icon-sm') +
+        '</a>';
+    }).join('') + '</div>';
+  }
+
+  function studyWeekList(levelId, selectedWeek) {
+    var weeks = studyWeeks(levelId);
+    return '<div class="week-list">' + weeks.map(function (week) {
+      var done = doneIn(week.lessons);
+      var state = done === week.lessons.length ? 'Complete'
+        : (done ? done + ' of ' + week.lessons.length : week.lessons.length + (week.lessons.length === 1 ? ' lesson' : ' lessons'));
+      return '<a class="week-row" href="#/course/' + levelId + '/' + week.week + '"' +
+        (week.week === selectedWeek ? ' aria-current="true"' : '') + '>' +
+        '<span class="week-badge">' + week.week + '</span>' +
+        '<span class="week-body">' +
+          '<span class="week-no">Week ' + week.week + ' \u2022 ' + ui.esc(week.theme) + '</span>' +
+          '<span class="week-title">' + ui.esc(week.lessons[0].title) + '</span>' +
+          '<span class="week-sub">' + ui.esc(week.lessons.slice(1).map(function (l) { return l.title; }).join(' \u00b7 ') || (week.lessons.length + ' lesson' + (week.lessons.length === 1 ? '' : 's') + ' \u00b7 ' + week.lessons[0].minutes + ' min')) + '</span>' +
         '</span>' +
         '<span class="week-state">' + state + '</span>' +
         ui.icon('chevron-right', 'icon-sm') +
@@ -62,37 +154,114 @@
       '</section>';
   }
 
-  function render(parts) {
+  function studyWeekDetail(levelId, week) {
+    var level = levelById(levelId);
+    var weeks = studyWeeks(levelId);
+    var done = doneIn(week.lessons);
+    return '<section class="panel" aria-labelledby="weekTitle">' +
+      '<div class="session-meta"><span class="week">' + ui.esc(level.label) + '</span> ' +
+      '<span>' + done + ' of ' + week.lessons.length + ' lessons studied</span></div>' +
+      '<h2 id="weekTitle" style="margin-top:0">Week ' + week.week + ' — ' + ui.esc(week.theme) + '</h2>' +
+      '<div class="week-pager">' +
+        (week.week > 1 ? '<a class="btn btn-quiet btn-sm" href="#/course/' + levelId + '/' + (week.week - 1) + '">\u2190 Week ' + (week.week - 1) + '</a>' : '<span></span>') +
+        '<span class="meta">Week ' + week.week + ' of ' + weeks.length + '</span>' +
+        (week.week < weeks.length ? '<a class="btn btn-quiet btn-sm" href="#/course/' + levelId + '/' + (week.week + 1) + '">Week ' + (week.week + 1) + ' \u2192</a>' : '<span></span>') +
+      '</div>' +
+      week.lessons.map(function (lesson) {
+        var isDone = studyDone(lesson);
+        return '<div class="session-row-wrap">' +
+          '<a class="session-row' + (isDone ? ' is-done' : '') + '" href="#/study/' + lesson.id + '/read">' +
+            '<span class="session-row-left"><span>' +
+              '<span class="day">' + ui.esc(themeTitle(lesson.theme)) + ' · ' + lesson.minutes + ' min</span>' +
+              '<span class="focus" style="display:block;font-weight:700">' + ui.esc(lesson.title) + '</span>' +
+              '<p class="focus">' + ui.esc((lesson.notes && lesson.notes[0]) || lesson.task || '') + '</p>' +
+            '</span></span>' +
+            '<span class="state">' + (isDone ? ui.icon('check', 'icon-sm') + ' Studied' : 'Start') +
+            ui.icon('chevron-right', 'icon-sm') + '</span></a>' +
+        '</div>';
+      }).join('') +
+      '</section>';
+  }
+
+  function studyLevelIntro(levelId) {
+    var level = levelById(levelId);
+    var data = studyData();
+    var meta = data && data.levels ? data.levels.filter(function (l) { return l.id === levelId; })[0] : null;
+    return '<section class="panel">' +
+      '<p class="section-eyebrow" style="margin:0 0 4px">' + ui.esc(level.label) + ' track</p>' +
+      '<h2 style="margin-top:0">' + ui.esc(level.blurb) + '</h2>' +
+      '<p>' + ui.esc(meta ? meta.description : 'Continue the course beyond the first twelve weeks.') + '</p>' +
+      (meta && meta.prerequisite ? '<p class="meta">' + ui.esc(meta.prerequisite) + '</p>' : '') +
+      '<div class="btn-row"><a class="btn btn-secondary" href="#/learn/' + levelId + '">All ' + ui.esc(level.label.toLowerCase()) + ' lessons</a>' +
+      '<a class="btn btn-quiet" href="#/skills">Practise by skill</a></div>' +
+      '</section>';
+  }
+
+  function resumeCard() {
     var pos = core.lastPosition();
     var posSession = pos ? core.session(pos.id) : null;
-    var weekNo = Number(parts[1]) || (posSession ? posSession.week : 0);
-    var week = core.data.curriculum.filter(function (w) { return w.week === weekNo; })[0] || null;
-    var prev = posSession ? core.adjacentSession(posSession.id, -1) : null;
-    var next = posSession ? core.adjacentSession(posSession.id, 1) : null;
-    var resume = posSession
-      ? '<div class="resume-wrap" style="margin-bottom:18px">' +
-          (prev ? '<a class="resume-side" href="#/session/' + prev.id + '/dialogue"><small>Previous lesson</small>\u2190 Week ' + prev.week + ' \u00b7 ' + ui.esc(prev.day.slice(0, 3)) + ' S' + prev.number + '</a>' : '') +
-          '<a class="resume-card" href="' + core.positionHash(pos) + '">' +
-            '<span class="resume-dot">\u25B6</span>' +
-            '<span class="resume-text"><small>You are here \u2014 continue where you left off</small>' +
-            '<strong>Week ' + posSession.week + ' \u00b7 ' + ui.esc(posSession.day) + ' \u00b7 Session ' + posSession.number + ' \u00b7 ' + core.STEP_NAMES[pos.step] + '</strong>' +
-            '<span>' + ui.esc(posSession.focus) + '</span></span>' +
-            '<span class="resume-go">Continue \u2192</span>' +
-          '</a>' +
-          (next ? '<a class="resume-side" href="#/session/' + next.id + '/dialogue"><small>Next lesson</small>Week ' + next.week + ' \u00b7 ' + ui.esc(next.day.slice(0, 3)) + ' S' + next.number + ' \u2192</a>' : '') +
-        '</div>'
-      : '';
+    if (!posSession) return '';
+    var prev = core.adjacentSession(posSession.id, -1);
+    var next = core.adjacentSession(posSession.id, 1);
+    return '<div class="resume-wrap" style="margin-bottom:18px">' +
+      (prev ? '<a class="resume-side" href="#/session/' + prev.id + '/dialogue"><small>Previous lesson</small>\u2190 Week ' + prev.week + ' \u00b7 ' + ui.esc(prev.day.slice(0, 3)) + ' S' + prev.number + '</a>' : '') +
+      '<a class="resume-card" href="' + core.positionHash(pos) + '">' +
+        '<span class="resume-dot">\u25B6</span>' +
+        '<span class="resume-text"><small>You are here \u2014 continue where you left off</small>' +
+        '<strong>Week ' + posSession.week + ' \u00b7 ' + ui.esc(posSession.day) + ' \u00b7 Session ' + posSession.number + ' \u00b7 ' + core.STEP_NAMES[pos.step] + '</strong>' +
+        '<span>' + ui.esc(posSession.focus) + '</span></span>' +
+        '<span class="resume-go">Continue \u2192</span>' +
+      '</a>' +
+      (next ? '<a class="resume-side" href="#/session/' + next.id + '/dialogue"><small>Next lesson</small>Week ' + next.week + ' \u00b7 ' + ui.esc(next.day.slice(0, 3)) + ' S' + next.number + ' \u2192</a>' : '') +
+    '</div>';
+  }
+
+  function render(parts) {
+    var arg = parts[1];
+    var levelId = 'beginner';
+    var weekNo = 0;
+
+    if (arg && /^\d+$/.test(arg)) {
+      weekNo = Number(arg);                       // #/course/3 — beginner week (unchanged)
+    } else if (arg && hasLevel(arg)) {
+      levelId = arg;
+      if (parts[2] && /^\d+$/.test(parts[2])) weekNo = Number(parts[2]);
+    } else {
+      var pos = core.lastPosition();
+      var posSession = pos ? core.session(pos.id) : null;
+      if (posSession) weekNo = posSession.week;
+    }
+
+    var level = levelById(levelId);
+    var week = null;
+    var list = '';
+    var detail = '';
+
+    if (levelId === 'beginner') {
+      week = core.data.curriculum.filter(function (w) { return w.week === weekNo; })[0] || null;
+      list = beginnerWeekList(week ? week.week : 0);
+      if (week) detail = weekDetail(week);
+    } else {
+      var weeks = studyWeeks(levelId);
+      week = weeks.filter(function (w) { return w.week === weekNo; })[0] || null;
+      list = studyWeekList(levelId, week ? week.week : 0);
+      if (week) detail = studyWeekDetail(levelId, week);
+      else detail = studyLevelIntro(levelId);
+    }
 
     return '<div class="view-narrow">' +
       '<h1>Course</h1>' +
-      '<p class="lead">Twelve weeks, three sessions a week, from first greetings to a full conversation.</p>' +
-      resume +
-      '<section class="study-course-entry"><p class="section-eyebrow">Keep growing · Official Malagasy</p>' +
-      '<h2>More situations. More ways to practise.</h2><p>26 beginner lessons, 27 intermediate lessons and 8 advanced-grammar lessons. Explore by level or by skill without losing your place in the 12-week course.</p>' +
-      '<div class="btn-row"><a class="btn" href="#/learn">Explore learning levels →</a><a class="btn btn-secondary" href="#/skills">Choose a skill</a></div></section>' +
-      (week ? weekDetail(week) : '') +
-      '<h2>' + (week ? 'All weeks' : 'Weeks') + '</h2>' +
-      weekList(week ? week.week : 0) +
+      '<p class="lead">Twelve weeks to a first full conversation, then an intermediate and an advanced track that keep going.</p>' +
+      tabBar(levelId) +
+      (levelId === 'beginner' ? resumeCard() : '') +
+      (levelId === 'beginner' && !week
+        ? '<section class="study-course-entry"><p class="section-eyebrow">Keep growing · Official Malagasy</p>' +
+          '<h2>More situations. More ways to practise.</h2><p>26 beginner lessons, 27 intermediate lessons and 8 advanced-grammar lessons. Explore by level or by skill without losing your place in the 12-week course.</p>' +
+          '<div class="btn-row"><a class="btn" href="#/learn">Explore learning levels →</a><a class="btn btn-secondary" href="#/skills">Choose a skill</a></div></section>'
+        : '') +
+      detail +
+      '<h2>' + (week ? 'All weeks of ' + ui.esc(level.label.toLowerCase()) : (levelId === 'beginner' ? 'Weeks' : 'Weeks of the ' + ui.esc(level.label.toLowerCase()) + ' track')) + '</h2>' +
+      list +
       '</div>';
   }
 

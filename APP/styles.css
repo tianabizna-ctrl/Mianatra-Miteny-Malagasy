@@ -1180,6 +1180,16 @@ html[data-mode="dark"] .say-label { color: var(--gold-2); }
   border-radius: 999px;
 }
 
+.week-sub {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.course-level-tabs {
+  margin-bottom: 18px;
+}
+
 .session-row {
   margin-top: 10px;
 }
